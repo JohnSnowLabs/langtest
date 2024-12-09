@@ -3,7 +3,7 @@ import asyncio
 from collections import defaultdict
 import logging
 import random
-from typing import List, Dict, Union
+from typing import List, Dict, TypedDict, Union
 
 import importlib_resources
 from langtest.errors import Errors, Warnings
@@ -100,6 +100,12 @@ class BaseClincial(ABC):
         "question-answering",
     ]
 
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
+
     @staticmethod
     @abstractmethod
     def transform(*args, **kwargs):
@@ -147,7 +153,7 @@ class DemographicBias(BaseClincial):
     DemographicBias class for the clinical tests
     """
 
-    alias_name = "demographic-bias"
+    alias_name = ["demographic-bias", "demographic_bias"]
     supported_tasks = ["question-answering", "text-generation"]
 
     @staticmethod

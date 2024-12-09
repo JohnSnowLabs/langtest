@@ -685,6 +685,7 @@ class PretrainedModelForQA(ModelAPI):
         )
 
         self.model = model
+        self.model_type = kwargs.get("model_type", None)
 
     @classmethod
     def _try_initialize_model(cls, path, device, tasks, **kwargs):
@@ -729,6 +730,9 @@ class PretrainedModelForQA(ModelAPI):
         - PretrainedModelForQA: An instance of the PretrainedModelForQA class.
         """
         try:
+            # set the model_type from kwargs
+            model_type = kwargs.get("model_type", None)
+
             # Setup and pop specific kwargs
             new_tokens_key = "max_new_tokens"
 
@@ -758,7 +762,7 @@ class PretrainedModelForQA(ModelAPI):
                     )
                 else:
                     model = HuggingFacePipeline(pipeline=path)
-                return cls(model)
+                return cls(model, model_type=model_type)
             else:
                 if isinstance(path, str):
                     model = cls._try_initialize_model(
@@ -773,7 +777,7 @@ class PretrainedModelForQA(ModelAPI):
                 else:
                     model = HuggingFacePipeline(pipeline=path)
 
-                return cls(model)
+                return cls(model, model_type=model_type)
 
         except Exception as e:
             raise ValueError(Errors.E090(error_message=e))
@@ -792,10 +796,29 @@ class PretrainedModelForQA(ModelAPI):
         - str: The generated prediction.
         """
         try:
-            prompt_template = SimplePromptTemplate(**prompt)
-            text = prompt_template.format(**text)
-            output = self.model._generate([text])
-            return output[0]
+            if self.model_type == "chat":
+                from langtest.prompts import PromptManager
+
+                prompt_manager = PromptManager()
+                examples = prompt_manager.get_prompt(hub="transformers")
+
+                if examples:
+                    prompt["template"] = "".join(
+                        f"{k.title()}:\n{{{k}}}\n" for k in text.keys()
+                    )
+                    prompt_template = SimplePromptTemplate(**prompt)
+                    text = prompt_template.format(**text)
+                    messages = [*examples, {"role": "user", "content": text}]
+                else:
+                    messages = [{"role": "user", "content": text}]
+                output = self.model._generate([messages])
+                return output[0].strip()
+
+            else:
+                prompt_template = SimplePromptTemplate(**prompt)
+                text = prompt_template.format(**text)
+                output = self.model._generate([text])
+                return output[0]
         except Exception as e:
             raise ValueError(Errors.E089(error_message=e))
 

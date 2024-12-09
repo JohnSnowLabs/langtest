@@ -1,6 +1,6 @@
 from numbers import Number
-from pydantic import Field
-from pydantic.typing import Annotated
+from pydantic.v1 import Field
+from pydantic.v1.typing import Annotated
 from ..errors import Errors
 from langtest.transform.constants import (
     ordinal,

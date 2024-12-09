@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 from langtest.transform.base import ITests
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.utils.custom_types.sample import Sample
@@ -13,6 +13,13 @@ class StereoSetTestFactory(ITests):
         "stereoset",
         "question-answering",
     ]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+        diff_threshold=float,
+    )
 
     def __init__(self, data_handler: List[Sample], tests: Dict = None, **kwargs) -> None:
         """Initializes the stereoset tests"""

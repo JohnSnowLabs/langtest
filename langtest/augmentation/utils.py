@@ -2,7 +2,7 @@ import re
 from typing import List, TypedDict, Union
 import os
 
-from pydantic import BaseModel, validator
+from pydantic.v1 import BaseModel, validator
 from langtest.logger import logger
 
 

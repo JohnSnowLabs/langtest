@@ -2,7 +2,7 @@ import asyncio
 from collections import defaultdict
 from ..errors import Errors
 from abc import ABC, abstractmethod
-from typing import List, Dict, Union
+from typing import List, Dict, TypedDict, Union
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -74,7 +74,7 @@ class RepresentationTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> Dict:
+    def available_tests() -> Dict[str, type["BaseRepresentation"]]:
         """
         Get a dictionary of all available tests, with their names as keys and their corresponding classes as values.
 
@@ -106,6 +106,13 @@ class BaseRepresentation(ABC):
         "toxicity",
         "translation",
     ]
+
+    # Config Hint for the representation tests
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_count=Union[int, Dict[str, int]],
+        min_proportion=Union[float, Dict[str, float]],
+    )
 
     @classmethod
     @abstractmethod
@@ -172,6 +179,16 @@ class GenderRepresentation(BaseRepresentation):
         "min_gender_representation_count",
         "min_gender_representation_proportion",
     ]
+
+    min_count = TypedDict("min_count", male=int, female=int, unknown=int)
+    min_proportion = TypedDict("min_proportion", male=float, female=float, unknown=float)
+
+    # Config Hint for the representation tests
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
+    )
 
     @classmethod
     def transform(
@@ -336,6 +353,32 @@ class EthnicityRepresentation(BaseRepresentation):
         "min_ethnicity_name_representation_count",
         "min_ethnicity_name_representation_proportion",
     ]
+
+    min_count = TypedDict(
+        "min_count",
+        black=int,
+        asian=int,
+        white=int,
+        native_american=int,
+        hispanic=int,
+        inter_racial=int,
+    )
+
+    min_proportion = TypedDict(
+        "min_proportion",
+        black=float,
+        asian=float,
+        white=float,
+        native_american=float,
+        hispanic=float,
+        inter_racial=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
+    )
 
     @classmethod
     def transform(
@@ -672,6 +715,34 @@ class ReligionRepresentation(BaseRepresentation):
         "summarization",
     ]
 
+    min_count = TypedDict(
+        "min_count",
+        muslim=int,
+        hindu=int,
+        sikh=int,
+        christian=int,
+        jain=int,
+        buddhist=int,
+        parsi=int,
+    )
+
+    min_proportion = TypedDict(
+        "min_proportion",
+        muslim=float,
+        hindu=float,
+        sikh=float,
+        christian=float,
+        jain=float,
+        buddhist=float,
+        parsi=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
+    )
+
     @classmethod
     def transform(
         cls, test: str, data: List[Sample], params: Dict
@@ -879,6 +950,28 @@ class CountryEconomicRepresentation(BaseRepresentation):
         "min_country_economic_representation_count",
         "min_country_economic_representation_proportion",
     ]
+
+    min_count = TypedDict(
+        "min_count",
+        high_income=int,
+        low_income=int,
+        lower_middle_income=int,
+        upper_middle_income=int,
+    )
+
+    min_proportion = TypedDict(
+        "min_proportion",
+        high_income=float,
+        low_income=float,
+        lower_middle_income=float,
+        upper_middle_income=float,
+    )
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_count=Union[min_count, int],
+        min_proportion=Union[min_proportion, float],
+    )
 
     @classmethod
     def transform(

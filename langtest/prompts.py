@@ -1,7 +1,7 @@
 from collections import defaultdict
 from typing import Dict, List, Union
 
-from pydantic import BaseModel, Extra, validator
+from pydantic.v1 import BaseModel, validator, Extra
 
 
 class MessageType(BaseModel):
@@ -33,11 +33,17 @@ class MessageType(BaseModel):
 
         temp = []
         order_less = []
-        for field in self.__dict__:
+
+        sorted_fields = sorted(
+            self.__dict__.keys(), key=lambda x: self.__field_order.index(x.lower())
+        )
+
+        for field in sorted_fields:
             if field in self.__field_order:
                 temp.append(f"{field.title()}: {{{field}}}")
             else:
                 order_less.append(f"{field.title()}: {{{field}}}")
+
         if order_less:
             temp.extend(order_less)
         return "\n" + "\n".join(temp)
@@ -169,7 +175,7 @@ class PromptConfig(BaseModel):
             return final_prompt
 
     def get_prompt(self, hub=None):
-        if hub == "lm-studio":
+        if hub in ("lm-studio", "transformers"):
             return self.lm_studio_prompt()
         return self.prompt_style()
 
@@ -194,7 +200,12 @@ class PromptConfig(BaseModel):
 
             # assistant role
             temp_ai["role"] = "assistant"
-            temp_ai["content"] = example.ai.get_template.format(**example.ai.get_example)
+            temp_ai["content"] = (
+                example.ai.get_template.format(**example.ai.get_example)
+                .replace("Answer:", "")
+                .strip()
+                + "\n\n"
+            )
 
             messages.append(temp_user)
             messages.append(temp_ai)
@@ -240,8 +251,9 @@ class PromptManager:
             return None
         if name is None:
             name = self.default_state
-        prompt_template = self.prompt_configs[name].get_prompt(hub)
-        return prompt_template
+        if name in self.prompt_configs:
+            prompt_template = self.prompt_configs[name].get_prompt(hub)
+            return prompt_template
 
     @property
     def default_state(self):

@@ -1,0 +1,9 @@
+parameters:
+    type: proportion
+    style: new
+tests:
+    robustness:
+        uppercase:
+            max_proportion: 0.2
+        lowercase:
+            max_proportion: 0.2

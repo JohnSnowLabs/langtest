@@ -1,10 +1,12 @@
 import inspect
+
 from typing import Any, List, Union
 import langchain.llms as lc
-from langchain.chains import LLMChain
+import langchain.chat_models as chat_models
+from langchain.chains.llm import LLMChain
 from langchain_core.prompts import PromptTemplate
 from langchain_core.exceptions import OutputParserException
-from pydantic import Field, ValidationError
+from pydantic.v1 import Field, ValidationError
 
 from langtest.utils.custom_types.output import NEROutput
 from langtest.utils.custom_types.predictions import NERPrediction
@@ -71,7 +73,9 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
-        exclude_args = ["task", "device", "stream"]
+        exclude_args = ["task", "device", "stream", "model_type", "chat_template"]
+
+        model_type = kwargs.get("model_type", None)
 
         filtered_kwargs = kwargs.copy()
 
@@ -93,18 +97,38 @@ class PretrainedModelForQA(ModelAPI):
                 "gpt-3.5-turbo-1106",
                 "gpt-4o-2024-05-13",
                 "gpt-4o",
-            ):
-                from langchain_openai.chat_models import ChatOpenAI
+                "o1-preview",
+                "o1-mini",
+            ) and hub in ["openai", "azure-openai"]:
+                if hub == "openai":
+                    from langchain_openai.chat_models import ChatOpenAI
 
-                model = ChatOpenAI(model=path, *args, **filtered_kwargs)
-                return cls(hub, model, *args, **filtered_kwargs)
-            elif hub == "ollama":
-                from langchain.chat_models.ollama import ChatOllama
+                    model = ChatOpenAI(model=path, *args, **filtered_kwargs)
+                elif hub == "azure-openai":
+                    from langchain_openai.chat_models import AzureChatOpenAI
 
-                model = ChatOllama(model=path, *args, **filtered_kwargs)
+                    model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
+
                 return cls(hub, model, *args, **filtered_kwargs)
+
             else:
-                model = getattr(lc, LANGCHAIN_HUBS[hub])
+                from .utils import CHAT_MODEL_CLASSES
+
+                if model_type and hub in CHAT_MODEL_CLASSES:
+                    if hasattr(chat_models, hub):
+                        hub_module = getattr(chat_models, hub)
+                        model = getattr(hub_module, CHAT_MODEL_CLASSES[hub])
+                    elif hasattr(chat_models, CHAT_MODEL_CLASSES[hub]):
+                        model = getattr(chat_models, CHAT_MODEL_CLASSES[hub])
+                    else:
+                        raise ValueError(Errors.E044(path=path))
+
+                elif model_type in [None, "completion"]:
+                    model = getattr(lc, LANGCHAIN_HUBS[hub])
+                else:
+                    raise ValueError(
+                        f"{hub} hub is not supported for the given model type"
+                    )
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
                 cls.model = model(model=path, *args, **filtered_kwargs)
@@ -114,6 +138,9 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(model_id=path, *args, **filtered_kwargs)
             elif "repo_id" in default_args:
                 cls.model = model(repo_id=path, model_kwargs=filtered_kwargs)
+            # mapping path dict to model object
+            else:
+                cls.model = model(**path)
             return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ImportError:
@@ -290,7 +317,7 @@ class PretrainedModelForNER(PretrainedModelForQA, ModelAPI):
 
     def __output_parser(self):
         from langchain_core.output_parsers import JsonOutputParser
-        from pydantic import BaseModel
+        from pydantic.v1 import BaseModel
 
         class Word(BaseModel):
             """Single word in a named entity recognition prediction"""
