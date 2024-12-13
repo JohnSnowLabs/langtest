@@ -109,12 +109,34 @@ Getting started with LangTest and Databricks is straightforward and involves a f
 
    To Review the Testcases:
    ```python
-   harness.testcases()
+   testcases_df = harness.testcases()
+   testcases_df
+   ```
+
+   To save testcases in delta live tables
+   ```python
+   import os
+   from deltalake import DeltaTable
+   from deltalake.writer import write_deltalake
+
+    write_deltalake("tmp/langtest_testcases", testcases_df) # for existed tables, pass mode="append"
+
    ```
 
    To Review the Generated Results 
    ```python
-   harness.generated_results()
+   results_df = harness.generated_results()
+   results_df
+   ```
+
+   Similary, for results_df in delta live tables.
+   ```python
+   import os
+   from deltalake import DeltaTable
+   from deltalake.writer import write_deltalake
+
+    write_deltalake("tmp/langtest_generated_results", results_df) # for existed tables, pass mode="append"
+
    ```
 
    This process evaluates your model's performance on the loaded data and provides a comprehensive report of the results.
