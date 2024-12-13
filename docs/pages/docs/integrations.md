@@ -122,6 +122,24 @@ Getting started with LangTest and Databricks is straightforward and involves a f
 By following these steps, you can easily integrate Databricks with LangTest to perform NLP or LLM model testing. If you encounter issues during setup or execution, refer to the troubleshooting section for solutions.
 
 **Troubleshooting & Support**  
-While setting up, you may encounter common issues like authentication errors with Databricks, incorrect dataset paths, or model compatibility problems. To resolve these, verify your API keys and workspace URL, ensure the specified dataset exists in Databricks, and confirm that your LangTest version is compatible with your project. If further help is needed, explore the FAQ section, access detailed documentation, or reach out through the support channels or community forum for assistance. 
+While setting up, you may encounter common issues like authentication errors with Databricks, incorrect dataset paths, or model compatibility problems. To resolve these, verify your API keys and workspace URL, ensure the specified dataset exists in Databricks, and confirm that your LangTest version is compatible with your project. If further help is needed, explore the FAQ section, access detailed documentation, or reach out through the support channels or community forum for assistance.
+
+### FAQ
+
+**Q: How do I resolve authentication errors with Databricks?**  
+A: Ensure that your API keys and workspace URL are correct. Double-check that your credentials have the necessary permissions to access the Databricks workspace.
+
+**Q: What should I do if the dataset path is incorrect?**  
+A: Verify that the specified dataset exists in Databricks and that the path is correctly formatted. You can use the Databricks UI to navigate and confirm the dataset location.
+
+**Q: How can I check if my LangTest version is compatible with my project?**  
+A: Refer to the LangTest documentation for version compatibility information. Ensure that you are using a version of LangTest that supports the features and integrations required for your project.
+
+**Q: Where can I find more detailed documentation?**  
+A: Access the detailed documentation on the LangTest official website or the Databricks documentation portal for comprehensive guides and examples.
+
+**Q: How can I get additional support?**  
+A: Reach out through the support channels provided by LangTest or Databricks. You can also join the community forum to ask questions and share experiences with other users.
+
 
 </div></div>
