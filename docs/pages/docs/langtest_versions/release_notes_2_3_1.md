@@ -39,7 +39,7 @@ In this patch version, we've resolved several critical issues to enhance the fun
 - **Text Classification Support:**
   - Support for multi-label classification in text classification tasks is added. [#1096]
  - **Data Augmentation**:
-   - Add JSON Output for NER Sample to Support Generative AI Lab[#1099][#1100]
+   - Add JSON Output for NER Sample to Support Generative AI Lab [#1099][#1100]
 
 ## What's Changed
 * chore: reapply transformations to NER task after importing test cases by @chakravarthik27 in https://github.com/JohnSnowLabs/langtest/pull/1076
