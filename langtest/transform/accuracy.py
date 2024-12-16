@@ -1338,6 +1338,7 @@ class DegradationAnalysis(BaseAccuracy):
 
             # if ground_truth is having None then skip the sample and continue to the next sample
             if ground_truth is None:
+                results["total"] -= 1
                 continue
 
             expected_results = sample.expected_results
