@@ -1333,7 +1333,12 @@ class DegradationAnalysis(BaseAccuracy):
             else:
                 context = sample.original_context
             index = context + "\n" + sample.original_question
+
             ground_truth = X_test[X_test.index == index]["expected_results"].values[0]
+
+            # if ground_truth is having None then skip the sample and continue to the next sample
+            if ground_truth is None:
+                continue
 
             expected_results = sample.expected_results
             actual_results = sample.actual_results
