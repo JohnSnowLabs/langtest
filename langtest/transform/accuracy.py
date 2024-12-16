@@ -1307,7 +1307,8 @@ class DegradationAnalysis(BaseAccuracy):
 
         return y_true, y_pred
 
-    def qa_evaluation(self, samples: List[QASample], X_test: pd.DataFrame):
+    @staticmethod
+    def qa_evaluation(samples: List[QASample], X_test: pd.DataFrame):
         """
         Evaluates the model performance on question-answering tasks.
 
