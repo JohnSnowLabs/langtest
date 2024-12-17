@@ -1187,10 +1187,11 @@ class DegradationAnalysis(BaseAccuracy):
             X_test = pd.DataFrame(
                 {
                     "original_content": [
-                        x.original_context if x.original_context else "" for x in X_test
+                        sample.original_context if sample.original_context else ""
+                        for sample in X_test
                     ],
-                    "original_question": [x.original_question for x in X_test],
-                    "expected_results": [x.expected_results for x in X_test],
+                    "original_question": [sample.original_question for sample in X_test],
+                    "expected_results": [sample.expected_results for sample in X_test],
                 }
             )
             X_test["index"] = (
@@ -1201,8 +1202,8 @@ class DegradationAnalysis(BaseAccuracy):
         elif isinstance(X_test, pd.Series) or isinstance(X_test, list):
             X_test = pd.DataFrame(
                 {
-                    "index": [x.original for x in X_test],
-                    "expected_results": [x.expected_results for x in X_test],
+                    "index": [sample.original for sample in X_test],
+                    "expected_results": [sample.expected_results for sample in X_test],
                 }
             )
 
