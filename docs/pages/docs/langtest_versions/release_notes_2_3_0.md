@@ -3,7 +3,7 @@ layout: docs
 header: true
 seotitle: LangTest - Deliver Safe and Effective Language Models | John Snow Labs
 title: LangTest Release Notes
-permalink: /docs/pages/docs/langtest_versions/latest_release
+permalink: /docs/pages/docs/langtest_versions/release_notes_2_3_0
 key: docs-release-notes
 modify_date: 2024-12-02
 ---
@@ -11,7 +11,7 @@ modify_date: 2024-12-02
 <div class="h3-box" markdown="1">
 
 ## 2.3.0
-------------------
+
 ## 📢 Highlights
 
 John Snow Labs is thrilled to announce the release of LangTest 2.3.0! This update introduces a host of new features and improvements to enhance your language model testing and evaluation capabilities.
