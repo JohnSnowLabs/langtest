@@ -6403,11 +6403,12 @@ testing = ["big-O", "jaraco.functools", "jaraco.itertools", "more-itertools", "p
 [extras]
 ai21 = ["ai21", "langchain", "langchain-community"]
 cohere = ["cohere", "langchain", "langchain-community"]
-databricks = ["langchain", "langchain-community", "langchain-databricks"]
+databricks = ["langchain", "langchain-community", "langchain-databricks", "langchain-openai"]
 datasets = ["datasets"]
 evaluate = ["evaluate", "rouge-score", "seqeval"]
 huggingface-hub = ["huggingface_hub", "langchain"]
 johnsnowlabs = ["johnsnowlabs"]
+llms = ["langchain", "langchain-community", "langchain-databricks", "langchain-openai"]
 matplotlib = ["matplotlib"]
 metaflow = ["metaflow"]
 mlflow = ["mlflow"]
@@ -6418,4 +6419,4 @@ transformers = ["accelerate", "datasets", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "6f47f0b23683e7502e51311dbcaf8f885fdac23871486ea6be621f26a4ba7038"
+content-hash = "e10302866d8f3668f995e865bd97cfc951f0daaad22f63742c676d19c1e5e373"
