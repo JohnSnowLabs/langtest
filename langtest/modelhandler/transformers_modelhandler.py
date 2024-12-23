@@ -810,6 +810,9 @@ class PretrainedModelForQA(ModelAPI):
                     text = prompt_template.format(**text)
                     messages = [*examples, {"role": "user", "content": text}]
                 else:
+                    if isinstance(text, dict):
+                        prompt_template = SimplePromptTemplate(**prompt)
+                        text = prompt_template.format(**text)
                     messages = [{"role": "user", "content": text}]
                 output = self.model._generate([messages])
                 return output[0].strip()

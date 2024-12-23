@@ -99,7 +99,8 @@ metaflow = ["metaflow"]
 mlflow = ["mlflow"]
 datasets = ["datasets"]
 matplotlib = ["matplotlib"]
-databricks = ["langchain", "langchain-databricks", "langchain-community"]
+databricks = ["langchain", "langchain-databricks", "langchain-community", "langchain-openai"]
+llms = ["langchain", "langchain-community", "langchain-openai", "langchain-databricks"]
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"
