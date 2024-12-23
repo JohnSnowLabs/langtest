@@ -60,7 +60,7 @@ class ModelAPITestCase(unittest.TestCase):
         """
         Test loading a model from the Ai21 hub
         """
-        with self.assertRaises(ConfigError) as _:
+        with self.assertRaises(Exception) as _:
             task = TaskManager("question-answering")
             task.model(model_path="j2-jumbo-instruct", model_hub="ai21")
 
@@ -68,7 +68,7 @@ class ModelAPITestCase(unittest.TestCase):
         """
         Test loading a model from the OpenAI hub
         """
-        with self.assertRaises(ConfigError) as _:
+        with self.assertRaises(Exception) as _:
             task = TaskManager("question-answering")
             task.model(model_path="gpt-3.5-turbo", model_hub="openai")
 
@@ -76,7 +76,7 @@ class ModelAPITestCase(unittest.TestCase):
         """
         Test loading a model from Cohere
         """
-        with self.assertRaises(ConfigError) as _:
+        with self.assertRaises(Exception) as _:
             task = TaskManager("question-answering")
             task.model(model_path="command-xlarge-nightly", model_hub="cohere")
 

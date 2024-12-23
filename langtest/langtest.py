@@ -13,6 +13,8 @@ import random
 
 from pkg_resources import resource_filename
 
+from langtest.types import DatasetConfig, HarnessConfig, ModelConfig
+
 from .tasks import TaskManager
 from .augmentation import AugmentRobustness, TemplaticAugment
 from .datahandler.datasource import DataFactory
@@ -90,20 +92,20 @@ class Harness:
     def __init__(
         self,
         task: Union[str, dict],
-        model: Optional[Union[list, dict]] = None,
-        data: Optional[Union[list, dict]] = None,
-        config: Optional[Union[str, dict]] = None,
+        model: Optional[Union[List[ModelConfig], ModelConfig]] = None,
+        data: Optional[Union[List[DatasetConfig], DatasetConfig]] = None,
+        config: Optional[Union[HarnessConfig, str]] = None,
         benchmarking: dict = None,
     ):
         """Initialize the Harness object.
 
         Args:
             task (str, optional): Task for which the model is to be evaluated.
-            model (list | dict, optional): Specifies the model to be evaluated.
+            model (ModelConfig, list | dict, optional): Specifies the model to be evaluated.
                 If provided as a list, each element should be a dictionary with 'model' and 'hub' keys.
                 If provided as a dictionary, it must contain 'model' and 'hub' keys when specifying a path.
-            data (dict, optional): The data to be used for evaluation.
-            config (str | dict, optional): Configuration for the tests to be performed.
+            data (DatasetConfig, dict, optional): The data to be used for evaluation.
+            config (str | HarnessConfig , optional): Configuration for the tests to be performed.
 
         Raises:
             ValueError: Invalid arguments.
@@ -156,11 +158,12 @@ class Harness:
             raise ValueError(Errors.E003())
 
         if isinstance(model, dict):
-            hub, model = model["hub"], model["model"]
+            hub, model, model_type = model["hub"], model["model"], model.get("type")
             self.hub = hub
             self._actual_model = model
         else:
             hub = None
+            model_type = None
 
         # loading task
 
@@ -215,14 +218,14 @@ class Harness:
                 hub = i["hub"]
 
                 model_dict[model] = self.task.model(
-                    model, hub, **self._config.get("model_parameters", {})
+                    model, hub, model_type, **self._config.get("model_parameters", {})
                 )
 
                 self.model = model_dict
 
         else:
             self.model = self.task.model(
-                model, hub, **self._config.get("model_parameters", {})
+                model, hub, model_type, **self._config.get("model_parameters", {})
             )
         # end model selection
         formatted_config = json.dumps(self._config, indent=1)
@@ -248,7 +251,7 @@ class Harness:
     def __str__(self) -> str:
         return object.__repr__(self)
 
-    def configure(self, config: Union[str, dict]) -> dict:
+    def configure(self, config: Union[HarnessConfig, dict, str]) -> HarnessConfig:
         """Configure the Harness with a given configuration.
 
         Args:
@@ -486,6 +489,15 @@ class Harness:
 
         if self._generated_results is None:
             raise RuntimeError(Errors.E011())
+
+        # plot the degradation analysis results
+        if (
+            "accuracy" in self._config["tests"]
+            and "degradation_analysis" in self._config["tests"]["accuracy"]
+        ):
+            from langtest.transform.accuracy import DegradationAnalysis
+
+            DegradationAnalysis.show_results()
 
         if isinstance(self._config, dict):
             self.default_min_pass_dict = self._config["tests"]["defaults"].get(
@@ -729,6 +741,12 @@ class Harness:
 
         columns = [c for c in column_order if c in generated_results_df.columns]
         generated_results_df = generated_results_df[columns]
+
+        if "degradation_analysis" in generated_results_df["test_type"].unique():
+            # drop the rows with test_type as 'degradation_analysis'
+            generated_results_df = generated_results_df[
+                generated_results_df["test_type"] != "degradation_analysis"
+            ]
 
         return generated_results_df.fillna("-")
 
@@ -979,6 +997,12 @@ class Harness:
 
         columns = [c for c in column_order if c in testcases_df.columns]
         testcases_df = testcases_df[columns]
+
+        if "degradation_analysis" in testcases_df["test_type"].unique():
+            # drop the rows with test_type as 'degradation_analysis'
+            testcases_df = testcases_df[
+                testcases_df["test_type"] != "degradation_analysis"
+            ]
 
         return testcases_df.fillna("-")
 

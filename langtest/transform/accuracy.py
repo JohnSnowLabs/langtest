@@ -2,7 +2,7 @@ import asyncio
 from collections import defaultdict
 import pandas as pd
 from abc import ABC, abstractmethod
-from typing import Any, DefaultDict, Dict, List, Type
+from typing import Any, DefaultDict, Dict, List, Type, TypedDict, Union
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -15,11 +15,13 @@ from langtest.utils.custom_types import (
 )
 from langtest.utils.custom_types.helpers import default_user_prompt
 from langtest.errors import Errors
+from langtest.utils.custom_types.sample import DegradationSample, QASample
 from langtest.utils.util_metrics import (
     calculate_f1_score,
     calculate_f1_score_multi_label,
     classification_report,
     classification_report_multi_label,
+    combine_labels,
 )
 
 
@@ -134,7 +136,7 @@ class AccuracyTestFactory(ITests):
 
         if isinstance(raw_data_copy[0], NERSample):
 
-            def predict_ner(sample):
+            def predict_ner(sample: NERSample):
                 prediction = model.predict(sample.original)
                 sample.actual_results = prediction
                 return prediction
@@ -269,6 +271,11 @@ class BaseAccuracy(ABC):
 
     alias_name = None
     supported_tasks = ["ner", "text-classification"]
+
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_score=Union[Dict[str, float], float],
+    )
 
     @classmethod
     @abstractmethod
@@ -1018,6 +1025,13 @@ class LLMEval(BaseAccuracy):
 
     eval_model = None
 
+    TestConfig = TypedDict(
+        "TestConfig",
+        model=str,
+        hub=str,
+        min_score=float,
+    )
+
     @classmethod
     def transform(
         cls, test: str, y_true: List[Any], params: Dict
@@ -1128,3 +1142,308 @@ class LLMEval(BaseAccuracy):
             if progress:
                 progress.update(1)
         return sample_list
+
+
+class DegradationAnalysis(BaseAccuracy):
+    """
+    Evaluation class for model performance degradation analysis.
+
+    Attributes:
+        alias_name (List[str]): Alias names for the evaluation class, should
+            include "degradation_analysis".
+        supported_tasks (List[str]): Supported tasks for evaluation,
+    Methods:
+    """
+
+    alias_name = ["degradation_analysis"]
+
+    supported_tasks = ["ner", "text-classification", "question-answering"]
+
+    result_data = defaultdict(dict)
+
+    @classmethod
+    def transform(cls, test: str, y_true: List[Any], params: Dict):
+        # reset the result data
+        DegradationAnalysis.result_data.clear()
+
+        return [
+            DegradationSample(
+                category="accuracy",
+                test_type="degradation_analysis",
+            )
+        ]
+
+    @staticmethod
+    async def run(
+        sample_list: List[DegradationSample],
+        y_true: List[Any],
+        y_pred: List[Any],
+        **kwargs,
+    ):
+        test_cases: Dict[str, Dict[str, List[Sample]]] = kwargs.get("test_cases", [])
+        X_test = kwargs.get("X_test", [])
+
+        if len(X_test) and isinstance(X_test[0], QASample):
+            X_test = pd.DataFrame(
+                {
+                    "original_content": [
+                        sample.original_context if sample.original_context else ""
+                        for sample in X_test
+                    ],
+                    "original_question": [sample.original_question for sample in X_test],
+                    "expected_results": [sample.expected_results for sample in X_test],
+                }
+            )
+            X_test["index"] = (
+                X_test["original_content"] + "\n" + X_test["original_question"]
+            )
+            X_test.set_index("index", inplace=True)
+
+        elif isinstance(X_test, pd.Series) or isinstance(X_test, list):
+            X_test = pd.DataFrame(
+                {
+                    "index": [sample.original for sample in X_test],
+                    "expected_results": [sample.expected_results for sample in X_test],
+                }
+            )
+
+            X_test.set_index("index", inplace=True)
+
+        else:
+            raise ValueError("X_test should be either a pd.Series or a list of samples.")
+
+        # ground_truth = X_test["expected_results"].to_list()
+
+        # # if ground_truth is having None values, raise an error
+        if X_test["expected_results"].isnull().any():
+            raise ValueError("Ground truth values cannot be None.")
+
+        progress = kwargs.get("progress_bar", False)
+
+        for category, data in test_cases.items():
+            if category not in ["robustness", "bias"]:
+                continue
+            for test_type, samples in data.items():
+                if len(samples) and isinstance(samples[0], QASample):
+                    accuracy_score1, accuracy_score2 = DegradationAnalysis.qa_evaluation(
+                        samples, X_test
+                    )
+
+                else:
+                    ground_truth = X_test[
+                        X_test.index.isin([i.original for i in samples])
+                    ]["expected_results"].to_list()
+
+                    expected_results = [x.expected_results for x in samples]
+                    actual_results = [x.actual_results for x in samples]
+
+                    accuracy_score1 = calculate_f1_score(
+                        *DegradationAnalysis.preprocess(ground_truth, expected_results)
+                    )
+                    accuracy_score2 = calculate_f1_score(
+                        *DegradationAnalysis.preprocess(ground_truth, actual_results)
+                    )
+
+                degradation = accuracy_score2 - accuracy_score1
+
+                DegradationAnalysis.result_data[category][test_type] = {
+                    "before": accuracy_score1,
+                    "after": accuracy_score2,
+                    "difference": degradation,
+                }
+
+        if len(sample_list) == 1:
+            for sample in sample_list:
+                sample.f1_scores = DegradationAnalysis.result_data
+                sample.state = "done"
+                if progress:
+                    progress.update(1)
+        else:
+            sample_list = [
+                DegradationSample(
+                    category="accuracy",
+                    test_type="degradation_analysis",
+                    f1_scores=DegradationAnalysis.result_data,
+                    state="done",
+                )
+            ]
+
+        return sample_list
+
+    @staticmethod
+    def preprocess(y_true: Union[list, pd.Series], y_pred: Union[list, pd.Series]):
+        """
+        Preprocesses the input data for the degradation analysis.
+
+        Args:
+
+            y_true (List): The true labels.
+            y_pred (List): The predicted labels.
+
+        Returns:
+
+            y_true, y_pred (Tuple[pd.Series, pd.Series]):
+            The preprocessed true and predicted labels.
+        """
+
+        if isinstance(y_true, list):
+            y_true = pd.Series(y_true).apply(lambda x: [y.entity for y in x])
+        else:
+            y_true = pd.Series(y_true).apply(lambda x: [y.entity for y in x.predictions])
+
+        y_pred = pd.Series(y_pred).apply(lambda x: [y.entity for y in x.predictions])
+
+        # remove the B- and I- prefixes from the entity tags and merge it
+        y_pred = y_pred.apply(lambda x: combine_labels(x))
+        y_true = y_true.apply(lambda x: combine_labels(x))
+
+        valid_indices = y_true.apply(len) == y_pred.apply(len)
+        y_true = y_true[valid_indices]
+        y_pred = y_pred[valid_indices]
+
+        y_true = y_true.explode()
+        y_pred = y_pred.explode()
+        y_pred = y_pred.apply(lambda x: x.split("-")[-1])
+        y_true = y_true.apply(lambda x: x.split("-")[-1])
+
+        return y_true, y_pred
+
+    @staticmethod
+    def qa_evaluation(samples: List[QASample], X_test: pd.DataFrame):
+        """
+        Evaluates the model performance on question-answering tasks.
+
+        Args:
+
+            samples (List[QASample]): The list of QASample instances.
+            X_test (pd.DataFrame): The test data.
+
+        Returns:
+
+            Tuple[float, float]: The accuracy scores for the original and perturbed samples.
+
+        """
+
+        results = {
+            "original": [],
+            "perturbed": [],
+            "total": len(samples),
+        }
+        for sample in samples:
+            if sample.original_context is None:
+                context = ""
+            else:
+                context = sample.original_context
+            index = context + "\n" + sample.original_question
+
+            g_values = X_test[X_test.index == index]["expected_results"].values
+            ground_truth = g_values[0] if len(g_values) else None
+
+            # if ground_truth is None, skip the sample and continue to the next sample
+            if ground_truth is None:
+                results["total"] -= 1
+                continue
+
+            expected_results = sample.expected_results
+            actual_results = sample.actual_results
+
+            original = sample.original_context + "\n" + sample.original_question
+            perturbed = sample.perturbed_context + "\n" + sample.perturbed_question
+
+            from ..utils.custom_types.helpers import is_pass_llm_eval
+            from ..langtest import EVAL_MODEL
+
+            o_result = is_pass_llm_eval(
+                eval_model=EVAL_MODEL,
+                dataset_name=sample.dataset_name,
+                original_question=original,
+                answer="\n".join(map(str, ground_truth)),
+                perturbed_question=perturbed,
+                prediction=expected_results,
+            )
+
+            p_result = is_pass_llm_eval(
+                eval_model=EVAL_MODEL,
+                dataset_name=sample.dataset_name,
+                original_question=original,
+                answer="\n".join(map(str, ground_truth)),
+                perturbed_question=perturbed,
+                prediction=actual_results,
+            )
+
+            results["original"].append(int(o_result) if o_result else 0)
+            results["perturbed"].append(int(p_result) if p_result else 0)
+
+        accuracy_score1 = sum(results["original"]) / max(results["total"], 1)
+        accuracy_score2 = sum(results["perturbed"]) / max(results["total"], 1)
+
+        return accuracy_score1, accuracy_score2
+
+    @staticmethod
+    def show_results():
+        import pandas as pd
+        import matplotlib.pyplot as plt
+
+        data = DegradationAnalysis.result_data
+        if not data:
+            raise ValueError("No data found for degradation analysis.")
+
+        for category, tests in data.items():
+            df = pd.DataFrame(tests).T
+
+            fig, ax = plt.subplots(figsize=(12, 6))
+
+            y_labels = df.index
+            y_pos = range(len(y_labels))
+
+            for i, label in enumerate(y_labels):
+                # Before robustness bar (back layer)
+                ax.broken_barh(
+                    [(0, df["before"][i])],
+                    (i - 0.4, 0.8),
+                    color="#d3d3d3",
+                    zorder=0,
+                    label="Before" if i == 0 else "",
+                )
+                # After robustness bar (front layer)
+                ax.broken_barh(
+                    [(0, df["after"][i])],
+                    (i - 0.2, 0.4),
+                    color="#1f77b4",
+                    label="After" if i == 0 else "",
+                    zorder=1,
+                )
+
+                # Adjust label position dynamically
+                offset = 0.03 if abs(df["before"][i] - df["after"][i]) < 0.05 else 0.01
+
+                # Text for "after" bar
+                ax.text(
+                    df["after"][i] + 0.01,
+                    i - 0.1,
+                    f"{df['after'][i]:.2f}",
+                    va="center",
+                    ha="left",
+                    color="#1f77b4",
+                    zorder=2,
+                )
+                # Text for "before" bar
+                ax.text(
+                    df["before"][i] + offset,
+                    i + 0.1,
+                    f"{df['before'][i]:.2f}",
+                    va="center",
+                    ha="left",
+                    color="black",
+                    zorder=2,
+                )
+
+            ax.set_xlim(0, 1)
+            ax.set_yticks(y_pos)
+            ax.set_yticklabels(y_labels)
+            ax.set_xlabel(f"Accuracy Score Over {category} Tests")
+            ax.set_title(f"Comparison of Accuracy Before and After {category} Tests")
+            ax.legend()
+
+            plt.tight_layout()
+            plt.show()

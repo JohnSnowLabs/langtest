@@ -1,8 +1,9 @@
 import re
-from pydantic import BaseModel
+from pydantic.v1 import BaseModel
 from collections.abc import Hashable
 import importlib
-from typing import List, Tuple
+from typing import List, Tuple, Union
+
 from ...errors import Errors
 
 default_user_prompt = {
@@ -350,6 +351,7 @@ def is_pass_llm_eval(
     answer: str,
     perturbed_question: str,
     prediction: str,
+    eval_template: Union[str, dict] = None,
 ):
     """
     Determines whether the model's prediction passes the Language Model Metric (LLM) evaluation.
@@ -367,22 +369,47 @@ def is_pass_llm_eval(
 
     """
 
-    if prediction.lower().strip() == answer.lower().strip():
-        return True
+    if eval_template is None:
+        if prediction.lower().strip() == answer.lower().strip():
+            return True
 
     inputs, predictions = prepare_llm_evaluation_data(
         original_question, answer, perturbed_question, prediction
     )
+
+    grades = None
+    if eval_template is None:
+        # from ...transform.constants import qa_prompt_template as template
+        from ...metrics.llm_eval import template
+
+        eval_template = template
+    elif isinstance(eval_template, dict):
+        from ...metrics.llm_eval import EvalTemplate
+
+        rubic_score_dict = eval_template.get("rubic_score", None)
+        grades = list(rubic_score_dict.keys())
+
+        eval_template = EvalTemplate.build_prompt(rubic_score_dict)
+
     if "llm" in str(type(eval_model)):
-        result = llm_prompt_eval(eval_model, dataset_name, inputs, predictions)
+        result = llm_prompt_eval(
+            eval_model, dataset_name, inputs, predictions, eval_template, grades
+        )
     else:
-        result = transformer_prompt_eval(eval_model, inputs, predictions)
+        result = transformer_prompt_eval(
+            eval_model, inputs, predictions, eval_template, grades
+        )
 
     return result
 
 
 def llm_prompt_eval(
-    eval_model, dataset_name: str, inputs: List[dict], predictions: List[dict]
+    eval_model,
+    dataset_name: str,
+    inputs: List[dict],
+    predictions: List[dict],
+    template: str = None,
+    grades: List[str] = None,
 ) -> bool:
     """
     Evaluates model predictions using the Language Model Metric (LLM) with prompt-based evaluation.
@@ -399,9 +426,6 @@ def llm_prompt_eval(
     """
     from langchain.evaluation.qa import QAEvalChain
     from langchain.prompts import PromptTemplate
-
-    # from ...transform.constants import qa_prompt_template as template
-    from ...metrics.llm_eval import template
 
     PROMPT = PromptTemplate(
         input_variables=["query", "answer", "result"],
@@ -436,17 +460,31 @@ def llm_prompt_eval(
             answer_key="answer",
             prediction_key="text",
         )
-        result = bool(
-            re.match(
-                r"CORRECT|TRUE",
+        if grades:
+            # Extract the grade from the result by matching the pattern
+            result = re.sub(
+                r"GRADE: ",
+                "",
                 list(graded_outputs[0].values())[0].replace("\n", "").strip(),
             )
-        )
+            match = re.search(f"({'|'.join(grades)})", result, re.IGNORECASE).group(0)
+            return match
+        else:
+            result = bool(
+                re.match(
+                    r"CORRECT|TRUE",
+                    list(graded_outputs[0].values())[0].replace("\n", "").strip(),
+                )
+            )
         return result
 
 
 def transformer_prompt_eval(
-    eval_model, inputs: List[dict], predictions: List[dict]
+    eval_model,
+    inputs: List[dict],
+    predictions: List[dict],
+    template: str = None,
+    grades: List[str] = None,
 ) -> bool:
     """
     Evaluates model predictions using a transformer-based language model.
@@ -461,7 +499,7 @@ def transformer_prompt_eval(
     """
     from ...metrics.llm_eval import LlmEval
 
-    eval_chain = LlmEval(llm=eval_model)
+    eval_chain = LlmEval(llm=eval_model, template=template, grade_list=grades)
     graded_outputs = eval_chain.evaluate(
         inputs,
         predictions,
@@ -469,7 +507,16 @@ def transformer_prompt_eval(
         answer_key="answer",
         prediction_key="result",
     )
-    result = list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
+    if grades is None:
+        result = (
+            list(graded_outputs[0].values())[0].replace("\n", "").strip() == "CORRECT"
+        )
+    else:
+        result = re.sub(
+            r"GRADE: ",
+            "",
+            list(graded_outputs[0].values())[0].replace("\n", "").strip(),
+        )
     return result
 
 

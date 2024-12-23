@@ -1,5 +1,5 @@
 import asyncio
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, TypedDict
 from langtest.utils.custom_types.sample import Sample
 from abc import ABC, abstractmethod
 from langtest.errors import Errors, Warnings
@@ -103,7 +103,7 @@ class GrammarTestFactory(ITests):
         return all_samples
 
     @staticmethod
-    def available_tests() -> dict:
+    def available_tests() -> Dict[str, type["BaseGrammar"]]:
         """
         Retrieve a dictionary of all available tests, with their names as keys
         and their corresponding classes as values.
@@ -120,9 +120,23 @@ class GrammarTestFactory(ITests):
 
 
 class BaseGrammar(ABC):
+    """
+    BaseGrammar abstract class for implementing to test the model performance on varying the input by grammatically changes .
+
+    """
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
+
     @staticmethod
     @abstractmethod
     def transform(sample_list: List[Sample], *args, **kwargs):
+        """
+        Abstract method that transforms the sample data with grammatically changes.
+        """
         raise NotImplementedError
 
     @staticmethod

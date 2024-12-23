@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 
 from langtest.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -82,6 +82,12 @@ class BaseToxicity(ABC):
 
     alias_name = None
     supported_tasks = ["toxicity", "text-generation"]
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     @staticmethod
     @abstractmethod

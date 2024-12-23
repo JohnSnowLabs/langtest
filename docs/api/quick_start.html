@@ -368,7 +368,7 @@ document.write(`
 <h2>LangTest Quick Start<a class="headerlink" href="#langtest-quick-start" title="Permalink to this heading">#</a></h2>
 <p>The following can be used as a quick reference on how to get up and running with <code class="docutils literal notranslate"><span class="pre">langtest</span></code>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span><span class="c1"># Install langtest from PyPI</span>
-pip<span class="w"> </span>install<span class="w"> </span><span class="nv">langtest</span><span class="o">==</span><span class="m">1</span>.1.0
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">langtest</span><span class="o">==</span><span class="m">2</span>.3.1
 </pre></div>
 </div>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">langtest</span> <span class="kn">import</span> <span class="n">Harness</span>
@@ -386,18 +386,11 @@ pip<span class="w"> </span>install<span class="w"> </span><span class="nv">langt
 <p>We can create a Python <a class="reference external" href="https://virtualenv.pypa.io/en/latest/">Virtualenv</a>:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>virtualenv<span class="w"> </span>langtest<span class="w"> </span>--python<span class="o">=</span>python3.8
 <span class="nb">source</span><span class="w"> </span>langtest/bin/activate
-pip<span class="w"> </span>install<span class="w"> </span><span class="nv">langtest</span><span class="o">==</span><span class="m">1</span>.1.0<span class="w"> </span>jupyter
+pip<span class="w"> </span>install<span class="w"> </span><span class="nv">langtest</span><span class="o">==</span><span class="m">2</span>.3.1<span class="w"> </span>jupyter
 </pre></div>
 </div>
 <p>Now you should be ready to create a jupyter notebook with LangTest running:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>jupyter<span class="w"> </span>notebook
-</pre></div>
-</div>
-<p>We can also use conda and create a new <a class="reference external" href="https://docs.conda.io/projects/conda/en/latest/index.html">conda</a> environment to manage all the dependencies there.</p>
-<p>Then we can create a new environment <code class="docutils literal notranslate"><span class="pre">langtest</span></code> and install the <code class="docutils literal notranslate"><span class="pre">langtest</span></code> package with pip:</p>
-<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>langtest<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.8<span class="w"> </span>-y
-conda<span class="w"> </span>activate<span class="w"> </span>langtest
-conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span><span class="nv">langtest</span><span class="o">==</span><span class="m">1</span>.1.0<span class="w"> </span>jupyter
 </pre></div>
 </div>
 <p>Now you should be ready to create a jupyter notebook with LangTest running:</p>
