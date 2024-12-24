@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 import asyncio
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 from langtest.errors import Errors
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests
@@ -63,6 +63,12 @@ class BaseSecurity(ABC):
 
     test_types = defaultdict(lambda: BaseSecurity)
     alias_name = None
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     @staticmethod
     @abstractmethod

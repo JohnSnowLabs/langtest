@@ -1,7 +1,7 @@
 import asyncio
 from abc import ABC, abstractmethod
 from copy import deepcopy
-from typing import Dict, List
+from typing import Dict, List, TypedDict
 
 from ..datahandler.datasource import DataFactory
 from langtest.errors import Errors
@@ -65,6 +65,12 @@ class BaseSafetyTest(ABC):
     alias_name = None
     supported_tasks = []
     registered_tests = {}
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     def __init__(self, data_handler: List[Sample], **kwargs) -> None:
         """Initialize a new BaseSafetyTest instance."""

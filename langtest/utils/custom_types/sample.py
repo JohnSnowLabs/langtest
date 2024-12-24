@@ -1,12 +1,12 @@
 import re
 import string
 import importlib
-from typing import Any, Dict, List, Optional, Tuple, TypeVar, Union, Callable
+from typing import Any, Dict, List, Mapping, Optional, Tuple, TypeVar, Union, Callable
 from copy import deepcopy
 
 from langtest.modelhandler.modelhandler import ModelAPI
 from ...errors import Errors
-from pydantic import BaseModel, PrivateAttr, validator, Field
+from pydantic.v1 import BaseModel, PrivateAttr, validator, Field
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
 from ...metrics import EmbeddingDistance
@@ -399,7 +399,7 @@ class BaseQASample(BaseModel):
     state: str = None
     task: str = Field(default="question-answering", const=True)
     test_case: str = None
-    config: str = None
+    config: Mapping[str, Mapping] = None
     distance_result: float = None
     eval_model: Union[str, tuple] = None
     ran_pass: bool = None
@@ -546,13 +546,20 @@ class QASample(BaseQASample):
                 if harness_config["evaluation"]["metric"].lower() == "llm_eval":
                     model = harness_config["evaluation"].get("model", None)
                     hub = harness_config["evaluation"].get("hub", None)
+                    model_parameters = harness_config["evaluation"].get(
+                        "model_parameters", None
+                    )
+                    if model_parameters is None:
+                        model_parameters = harness_config.get("model_parameters", {})
                     if model and hub:
                         from ...tasks import TaskManager
 
                         load_eval_model = TaskManager(self.task)
                         self.eval_model = load_eval_model.model(
-                            model, hub, **harness_config.get("model_parameters", {})
+                            model, hub, **model_parameters
                         )
+                    else:
+                        self.eval_model = EVAL_MODEL
 
             else:
                 self.eval_model = EVAL_MODEL
@@ -656,6 +663,12 @@ class QASample(BaseQASample):
             elif self.metric_name == "llm_eval":
                 if isinstance(self.eval_model, dict):
                     self.eval_model = list(self.eval_model.values())[-1]
+
+                # get the template for evaluation
+
+                template = self.config.get("evaluation", {}).get("eval_prompt", None)
+
+                # get the metric function
                 result = metric_function(
                     eval_model=self.eval_model,
                     dataset_name=self.dataset_name,
@@ -663,6 +676,7 @@ class QASample(BaseQASample):
                     answer=self.expected_results,
                     perturbed_question=self.perturbed_question,
                     prediction=self.actual_results,
+                    eval_template=template,
                 )
 
                 self.ran_pass = result
@@ -3094,6 +3108,38 @@ Answer: UnRecognizable.
 
             else:
                 raise ValueError(f"Metric '{self.metric_name}' not found.")
+
+
+class DegradationSample(BaseModel):
+    """
+    A class representing a sample for the Degradation task.
+
+    Attributes:
+        category (str): The category or module name associated with the sample.
+        state (str): The state of the sample.
+        test_type (str): The type of test being performed.
+    """
+
+    category: str = Field(default=None, alias="category")
+    state: str = Field(default=None, alias="state")
+    test_type: str = Field(default=None, alias="test_type")
+    f1_scores: Mapping[str, Mapping[str, float]] = Field(default=dict, alias="f1_scores")
+
+    def to_dict(self) -> Dict[str, Any]:
+        """
+        Convert the DegradationSample instance to a dictionary.
+
+        Returns:
+            Dict[str, Any]: A dictionary representation of the sample.
+        """
+
+        return {
+            "category": self.category,
+            "test_type": self.test_type,
+        }
+
+    def is_pass(self) -> str:
+        return "not_validated"
 
 
 Sample = TypeVar(

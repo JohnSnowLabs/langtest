@@ -1,7 +1,7 @@
 import asyncio
 import time
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, TypedDict
 from langtest.errors import Errors
 from abc import ABC, abstractmethod
 from langtest.modelhandler.modelhandler import ModelAPI
@@ -73,7 +73,7 @@ class PerformanceTestFactory(ITests):
         return tasks
 
     @classmethod
-    def available_tests(cls) -> Dict[str, str]:
+    def available_tests(cls) -> Dict[str, type["BasePerformance"]]:
         """Returns the available model performance
 
         Returns:
@@ -95,6 +95,12 @@ class BasePerformance(ABC):
     test_types = defaultdict(lambda: BasePerformance)
     alias_name = None
     TOKENS = 0
+
+    # TestConfig
+    TestConfig = TypedDict(
+        "TestConfig",
+        min_pass_rate=float,
+    )
 
     @staticmethod
     @abstractmethod

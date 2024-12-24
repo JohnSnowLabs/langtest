@@ -31,6 +31,8 @@ docs-menu:
           url: /docs/pages/docs/install
         - title:  One Liners
           url:    /docs/pages/docs/one_liner
+        - title:  Integrations
+          url:    /docs/pages/docs/integrations
 
   - title: General Concepts
     url: /docs/pages/docs/harness
