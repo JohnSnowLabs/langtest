@@ -9,7 +9,6 @@ from langtest.utils.custom_types.sample import Sample
 
 
 class SecurityTestFactory(ITests):
-
     """Factory class for the security tests"""
 
     alias_name = "security"

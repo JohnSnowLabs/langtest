@@ -4,7 +4,6 @@ import pandas as pd
 
 
 class Leaderboard(Generic[TypeVar("T", bound="Leaderboard")]):
-
     """
     Leaderboard class to manage the ranking of the models
 

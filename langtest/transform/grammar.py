@@ -67,13 +67,15 @@ class GrammarTestFactory(ITests):
 
             if str(TestFactory.task) in ("question-answering"):
                 _ = [
-                    sample.transform(
-                        test_func,
-                        params.get("parameters", {}),
-                        prob=params.pop("prob", 1.0),
+                    (
+                        sample.transform(
+                            test_func,
+                            params.get("parameters", {}),
+                            prob=params.pop("prob", 1.0),
+                        )
+                        if hasattr(sample, "transform")
+                        else sample
                     )
-                    if hasattr(sample, "transform")
-                    else sample
                     for sample in data_handler_copy
                 ]
                 transformed_samples = data_handler_copy

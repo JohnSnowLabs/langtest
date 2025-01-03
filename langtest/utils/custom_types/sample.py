@@ -1127,7 +1127,6 @@ class TranslationSample(BaseModel):
 
 
 class SecuritySample(BaseModel):
-
     """
     A class Representing a sample for security task.
 

@@ -17,9 +17,11 @@ if try_import_lib("langchain"):
     import langchain.llms
 
     LANGCHAIN_HUBS = {
-        RENAME_HUBS.get(hub.lower(), hub.lower())
-        if hub.lower() in RENAME_HUBS
-        else hub.lower(): hub
+        (
+            RENAME_HUBS.get(hub.lower(), hub.lower())
+            if hub.lower() in RENAME_HUBS
+            else hub.lower()
+        ): hub
         for hub in langchain.llms.__all__
     }
 else:
