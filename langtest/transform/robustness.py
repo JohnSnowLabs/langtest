@@ -132,13 +132,15 @@ class RobustnessTestFactory(ITests):
                 and test_name != "multiple_perturbations"
             ):
                 _ = [
-                    sample.transform(
-                        test_func,
-                        params.get("parameters", {}),
-                        prob=params.pop("prob", 1.0),
+                    (
+                        sample.transform(
+                            test_func,
+                            params.get("parameters", {}),
+                            prob=params.pop("prob", 1.0),
+                        )
+                        if hasattr(sample, "transform")
+                        else sample
                     )
-                    if hasattr(sample, "transform")
-                    else sample
                     for sample in data_handler_copy
                 ]
                 transformed_samples = data_handler_copy
@@ -163,14 +165,16 @@ class RobustnessTestFactory(ITests):
                                 "parameters"
                             ] = {"accent_map": {v: k for k, v in A2B_DICT.items()}}
                         _ = [
-                            sample.transform(
-                                func=test_func,
-                                params=self.tests,
-                                prob=prob,
-                                perturbations=perturbations,
+                            (
+                                sample.transform(
+                                    func=test_func,
+                                    params=self.tests,
+                                    prob=prob,
+                                    perturbations=perturbations,
+                                )
+                                if hasattr(sample, "transform")
+                                else sample
                             )
-                            if hasattr(sample, "transform")
-                            else sample
                             for sample in data_handler_copy
                         ]
                         transformed_samples_perturbation = copy.deepcopy(
@@ -178,9 +182,11 @@ class RobustnessTestFactory(ITests):
                         )  # Create a deep copy
                         if perturbation_number != "":
                             test_type = "-".join(
-                                str(perturbation)
-                                if not isinstance(perturbation, dict)
-                                else next(iter(perturbation))
+                                (
+                                    str(perturbation)
+                                    if not isinstance(perturbation, dict)
+                                    else next(iter(perturbation))
+                                )
                                 for perturbation in perturbations
                             )
                             for sample in transformed_samples_perturbation:
@@ -219,9 +225,11 @@ class RobustnessTestFactory(ITests):
 
                         if perturbation_number != "":
                             test_type = "-".join(
-                                str(perturbation)
-                                if not isinstance(perturbation, dict)
-                                else next(iter(perturbation))
+                                (
+                                    str(perturbation)
+                                    if not isinstance(perturbation, dict)
+                                    else next(iter(perturbation))
+                                )
                                 for perturbation in perturbations
                             )
                             for sample in transformed_samples_perturbation:

@@ -249,12 +249,17 @@ class NER(BaseTask):
                     word=token,
                     start=cursor,
                     end=cursor + len(token),
-                    pos_tag=row_data[column_mapper[pos_tag]][token_indx]
-                    if pos_tag in column_mapper and column_mapper[pos_tag] in row_data
-                    else None,
-                    chunk_tag=row_data[column_mapper[chunk_tag]][token_indx]
-                    if chunk_tag in column_mapper and column_mapper[chunk_tag] in row_data
-                    else None,
+                    pos_tag=(
+                        row_data[column_mapper[pos_tag]][token_indx]
+                        if pos_tag in column_mapper and column_mapper[pos_tag] in row_data
+                        else None
+                    ),
+                    chunk_tag=(
+                        row_data[column_mapper[chunk_tag]][token_indx]
+                        if chunk_tag in column_mapper
+                        and column_mapper[chunk_tag] in row_data
+                        else None
+                    ),
                 )
             )
             cursor += len(token) + 1  # +1 to account for the white space
@@ -302,9 +307,11 @@ class TextClassification(BaseTask):
             if not isinstance(labels, list):
                 labels = [str(labels)]
             labels = [
-                samples.SequenceLabel(label=label, score=1.0)
-                if isinstance(label, str)
-                else label
+                (
+                    samples.SequenceLabel(label=label, score=1.0)
+                    if isinstance(label, str)
+                    else label
+                )
                 for label in labels
             ]
         else:

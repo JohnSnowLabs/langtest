@@ -235,9 +235,11 @@ class AccuracyTestFactory(ITests):
 
         if kwargs["is_default"]:
             y_pred = y_pred.apply(
-                lambda x: "1"
-                if x in ["pos", "LABEL_1", "POS"]
-                else ("0" if x in ["neg", "LABEL_0", "NEG"] else x)
+                lambda x: (
+                    "1"
+                    if x in ["pos", "LABEL_1", "POS"]
+                    else ("0" if x in ["neg", "LABEL_0", "NEG"] else x)
+                )
             )
 
         supported_tests = cls.available_tests()

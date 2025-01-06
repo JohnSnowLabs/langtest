@@ -77,7 +77,6 @@ if try_import_lib("llama_index"):
             return EvaluationResult(0.0, 0.0, 0.0, 0.0, 0.0)
 
     class LangtestRetrieverEvaluator(RetrieverEvaluator):
-
         """
         A class for evaluating the performance of a retriever model against a set of test cases and configurations.
 

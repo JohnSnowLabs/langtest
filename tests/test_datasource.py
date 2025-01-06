@@ -447,7 +447,6 @@ class TestSynteticData:
 
 
 class TestPandasDataset:
-
     """Test cases for PandasDataset"""
 
     def test_load_data_pickle(self):

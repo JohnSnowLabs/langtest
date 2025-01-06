@@ -170,16 +170,16 @@ class ConvertNumberToWord:
         hunword = (
             f" {number_args['one']}"
             if hundreds == 1
-            else str(unit[hundreds])
-            if hundreds
-            else f" {number_args['zero']}"
+            else str(unit[hundreds]) if hundreds else f" {number_args['zero']}"
         )
         tenword = (
             self.tenfn(tens, units)
             if tens
-            else f" {number_args['zero']} {unit[units]}"
-            if units
-            else f" {number_args['zero']} {number_args['zero']}"
+            else (
+                f" {number_args['zero']} {unit[units]}"
+                if units
+                else f" {number_args['zero']} {number_args['zero']}"
+            )
         )
         return f"{hunword} {tenword}, "
 
@@ -236,9 +236,7 @@ class ConvertNumberToWord:
         sign = (
             "plus"
             if nowhite.startswith("+")
-            else "minus"
-            if nowhite.startswith("-")
-            else ""
+            else "minus" if nowhite.startswith("-") else ""
         )
 
         if num in nth_suff:
@@ -314,11 +312,11 @@ class ConvertNumberToWord:
                 first = True if decimal is None else not num.endswith(decimal)
                 num += "".join(
                     [
-                        f" {nc}"
-                        if not first
-                        else f"{comma} {nc}"
-                        if nc == decimal
-                        else f" {nc}"
+                        (
+                            f" {nc}"
+                            if not first
+                            else f"{comma} {nc}" if nc == decimal else f" {nc}"
+                        )
                         for nc in numchunks
                     ]
                 )

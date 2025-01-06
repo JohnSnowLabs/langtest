@@ -8,9 +8,9 @@ scikit-learn
 transformers
 torch
 sentencepiece
-pydantic==1.10.6
+pydantic==2.9.2
 spacy
-johnsnowlabs==4.3.5
+johnsnowlabs==5.5.0
 plotly
 asyncio
 nest-asyncio

@@ -228,9 +228,9 @@ def model_report(
     columns = list(set(columns))
     columns = sorted(
         columns,
-        key=lambda x: ordered_columns.index(x)
-        if x in ordered_columns
-        else len(ordered_columns),
+        key=lambda x: (
+            ordered_columns.index(x) if x in ordered_columns else len(ordered_columns)
+        ),
     )
 
     # df_report = df_report.T.drop_duplicates().T

@@ -402,9 +402,7 @@ class TemplaticAugment(BaseAugmentaion):
         new_data = (
             data.copy()
             if isinstance(data, (pd.DataFrame, pd.Series))
-            else copy.deepcopy(data)
-            if append_original
-            else []
+            else copy.deepcopy(data) if append_original else []
         )
         self.__search_results = self.search_sample_results(data)
 
