@@ -4,7 +4,6 @@ from ..errors import Errors
 
 
 class StringDistance:
-
     """
     A class for calculating various string distance metrics.
     """

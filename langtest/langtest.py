@@ -437,9 +437,9 @@ class Harness:
                     checkpoint_folder=dataset_checkpoint_dir
                 )
                 harness._checkpoints[dataset_name] = checkpoint_manager.load_checkpoint()
-                harness._testcases[
-                    dataset_name
-                ] = checkpoint_manager.load_remaining_batch()
+                harness._testcases[dataset_name] = (
+                    checkpoint_manager.load_remaining_batch()
+                )
                 harness.batches[dataset_name] = checkpoint_manager.load_batches()
 
         elif isinstance(model, dict):
@@ -458,12 +458,12 @@ class Harness:
                 checkpoint_manager = CheckpointManager(
                     checkpoint_folder=model_checkpoint_dir
                 )
-                harness._checkpoints[
-                    model_name["model"]
-                ] = checkpoint_manager.load_checkpoint()
-                harness._testcases[
-                    model_name["model"]
-                ] = checkpoint_manager.load_remaining_batch()
+                harness._checkpoints[model_name["model"]] = (
+                    checkpoint_manager.load_checkpoint()
+                )
+                harness._testcases[model_name["model"]] = (
+                    checkpoint_manager.load_remaining_batch()
+                )
                 harness.batches[model_name["model"]] = checkpoint_manager.load_batches()
         return harness
 

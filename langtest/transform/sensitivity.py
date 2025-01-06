@@ -78,12 +78,14 @@ class SensitivityTestFactory(ITests):
             test_func = self.supported_tests[test_name].transform
 
             _ = [
-                sample.transform(
-                    test_func,
-                    params.get("parameters", {}),
+                (
+                    sample.transform(
+                        test_func,
+                        params.get("parameters", {}),
+                    )
+                    if hasattr(sample, "transform")
+                    else sample
                 )
-                if hasattr(sample, "transform")
-                else sample
                 for sample in data_handler_copy
             ]
             transformed_samples = data_handler_copy
