@@ -92,11 +92,10 @@ class DebiasTextProcessing:
         self.dataset = dataset
         self.text_column = text_column
         self.debias_info = []
-    
+
     def initialize(self, model: str, hub: str):
         # Placeholder for model initialization
         self.debias_model = (model, hub)
-        
 
     def identify_bias(self):
         for index, row in self.dataset.iterrows():
@@ -112,7 +111,9 @@ class DebiasTextProcessing:
                     }
                 )
 
-    def detect_bias(self, text: Union[str, BiasDetectionRequest]) -> BiasDetectionResponse:
+    def detect_bias(
+        self, text: Union[str, BiasDetectionRequest]
+    ) -> BiasDetectionResponse:
         # Placeholder for bias detection logic
 
         return (None, None, None)
