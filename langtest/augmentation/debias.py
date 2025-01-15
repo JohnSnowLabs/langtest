@@ -150,20 +150,7 @@ class DebiasTextProcessing:
         )
 
     def interaction_llm(self, text: str, output_schema: type[_Schema]) -> _Schema:
-        # import openai
 
-        # client = openai.Client()
-
-        # response = client.beta.chat.completions.parse(
-        #     model="gpt-4o-mini",
-        #     messages=[
-        #         {"role": "system", "content": self.prompt},
-        #         {"role": "user", "content": text},
-        #     ],
-        #     response_format=output_schema,
-        # )
-
-        # output_data = response.choices[0].message.parsed
         if self.hub == "openai":
             output_data = self.get_openai(
                 text, self.system_prompt, output_schema, self.model_kwargs
