@@ -2,7 +2,7 @@ from typing import Dict, List, Literal, TypeVar, Union
 from pydantic import BaseModel, Field
 import pandas as pd
 
-_Schema = TypeVar("_Schema")
+_Schema = TypeVar("_Schema", bound=BaseModel)
 
 
 class BiasDetectionRequest(BaseModel):
@@ -98,13 +98,13 @@ class DebiasingResult(BaseModel):
 
 
 class DebiasTextProcessing:
-    def __init__(self, model: str, hub: str, prompt: str):
-        # from langtest.tasks.task import TaskManager
-
-        # task = TaskManager("question-answering")
-
-        # # self.debias_model = task.model(model_path=model, model_hub=hub, model_type="chat")
-        self.prompt = prompt
+    def __init__(
+        self, model: str, hub: str, system_prompt: str, model_kwargs: Dict = None
+    ):
+        self.model = model
+        self.hub = hub
+        self.system_prompt = system_prompt
+        self.model_kwargs = model_kwargs
         self.debias_info = pd.DataFrame(
             {"row": [], "reason": [], "category": [], "sub_category": []}
         )
@@ -150,20 +150,28 @@ class DebiasTextProcessing:
         )
 
     def interaction_llm(self, text: str, output_schema: type[_Schema]) -> _Schema:
-        import openai
+        # import openai
 
-        client = openai.Client()
+        # client = openai.Client()
 
-        response = client.beta.chat.completions.parse(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "system", "content": self.prompt},
-                {"role": "user", "content": text},
-            ],
-            response_format=output_schema,
-        )
+        # response = client.beta.chat.completions.parse(
+        #     model="gpt-4o-mini",
+        #     messages=[
+        #         {"role": "system", "content": self.prompt},
+        #         {"role": "user", "content": text},
+        #     ],
+        #     response_format=output_schema,
+        # )
 
-        output_data = response.choices[0].message.parsed
+        # output_data = response.choices[0].message.parsed
+        if self.hub == "openai":
+            output_data = self.get_openai(
+                text, self.system_prompt, output_schema, self.model_kwargs
+            )
+        elif self.hub == "ollama":
+            output_data = self.get_ollama(
+                text, self.system_prompt, output_schema, self.model_kwargs
+            )
 
         return output_data
 
@@ -212,3 +220,40 @@ class DebiasTextProcessing:
             self.dataset = pd.read_excel(source)
         else:
             raise ValueError(f"Unsupported source type: {source_type}")
+
+    def get_openai(
+        self, text, system_prompt, output_schema: type[_Schema], *args, **kwargs
+    ) -> _Schema:
+        import openai
+
+        client = openai.Client()
+
+        response = client.beta.chat.completions.parse(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": text},
+            ],
+            response_format=output_schema,
+        )
+
+        return response.choices[0].message.parsed
+
+    def get_ollama(
+        self, text, system_prompt, output_schema: type[_Schema], model_kwargs: Dict = None
+    ) -> _Schema:
+        from ollama import chat
+
+        response = chat(
+            model=self.model,
+            messages=[
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": text},
+            ],
+            format=output_schema.model_json_schema(),
+            options=model_kwargs,
+        )
+
+        return output_schema.model_validate_json(
+            response.get("message", {}).get("content")
+        )
