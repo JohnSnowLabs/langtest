@@ -187,7 +187,7 @@ class DebiasTextProcessing:
         Sub-category: {sub_category}
         Reason: {reason}
 
-        Step by Step Debiasing Instructions: 
+        Step by Step Debiasing Instructions:
         {step_by_step}
         """
 
