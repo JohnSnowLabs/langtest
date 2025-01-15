@@ -6585,6 +6585,7 @@ llms = ["langchain", "langchain-community", "langchain-databricks", "langchain-o
 matplotlib = ["matplotlib"]
 metaflow = ["metaflow"]
 mlflow = ["mlflow"]
+ollama-sdk = ["langchain", "langchain-community", "ollama"]
 openai = ["langchain", "langchain-community", "langchain-openai", "openai"]
 spacy = ["spacy"]
 transformers = ["accelerate", "datasets", "torch", "transformers"]
@@ -6592,4 +6593,4 @@ transformers = ["accelerate", "datasets", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "fd132798c3c5c5ebf7b85f41d41b9cb89ec34e687c218eb9767ad39d0c9987c7"
+content-hash = "2b3f907102534883b5ee037e30c6a47e5f311d01e806105a73fe2e0a1295e83d"
