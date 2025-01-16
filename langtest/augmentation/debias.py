@@ -26,6 +26,16 @@ class _BiasDetectionResponse(BaseModel):
         bias_rationale (str): Reason for bias.
     """
 
+    class Step(BaseModel):
+        biased_word: str
+        debiased_word: str
+
+        def __repr__(self):
+            return f"{self.biased_word} -> {self.debiased_word};"
+        
+        def __str__(self):
+            return f"{self.biased_word} -> {self.debiased_word};"
+
     category: Literal[
         "demographic",
         "discrimination",
@@ -40,7 +50,7 @@ class _BiasDetectionResponse(BaseModel):
     ] = Field(..., title="Category of bias")
     sub_category: str = Field(..., description="Sub-category of bias")
     bias_rationale: str = Field(..., description="Reason for bias")
-    steps: List[str] = Field(..., description="5 Steps to mitigate bias")
+    steps: List[Step] = Field(..., description="Simple Steps to mitigate bias by changing the words or phrases in the text")
 
 
 class _TextDebiasingRequest(BaseModel):
@@ -107,7 +117,7 @@ class DebiasTextProcessing:
         self.system_prompt = system_prompt
         self.model_kwargs = model_kwargs
         self.debias_info = pd.DataFrame(
-            columns=["row", "reason", "category", "sub_category", "steps"]
+            columns=["row", "original text", "reason", "category", "sub_category", "steps"]
         )
 
     def initialize(
@@ -119,7 +129,7 @@ class DebiasTextProcessing:
 
         # reset debias_info
         self.debias_info = pd.DataFrame(
-            columns=["row", "reason", "category", "sub_category", "steps"]
+            columns=["row", "original text", "reason", "category", "sub_category", "steps"]
         )
 
     def identify_bias(self):
@@ -130,12 +140,14 @@ class DebiasTextProcessing:
                 if index not in self.debias_info["row"].values:
                     self.debias_info.loc[len(self.debias_info)] = {
                         "row": index,
+                        "original text": text,
                         "reason": rationale,
                         "category": category,
                         "sub_category": sub_category,
                         "steps": steps,
                     }
                 else:
+                    self.debias_info.loc[row["row"], "original text"] = text
                     self.debias_info.loc[row["row"], "reason"] = rationale
                     self.debias_info.loc[row["row"], "category"] = category
                     self.debias_info.loc[row["row"], "sub_category"] = sub_category
@@ -179,7 +191,7 @@ class DebiasTextProcessing:
         self, text: str, category: str, sub_category: str, reason: str, steps: List[str]
     ) -> str:
         # Placeholder for debiasing logic
-        step_by_step = "\n".join(f"- {step}" for step in steps)
+        step_by_step = "\n".join(f"- {str(step)}" for step in steps)
         system_prompt = (
             f"Debias the text with the following bias information and reason.\n\n"
             f"Category: {category}\n"
@@ -188,7 +200,7 @@ class DebiasTextProcessing:
             f"Step by Step Debiasing Instructions:\n{step_by_step}"
         )
 
-        prompt = f"""The following text is biased. Please debias it. \nText: {text}"""
+        prompt = f"""The following text contains bias. Please rewrite it to eliminate bias by rephrasing or modifying specific words and phrases.\nText: {text}"""
 
         debiased_text = self.interaction_llm(
             prompt, output_schema=_DebiasedTextResponse, system_prompt=system_prompt
@@ -206,7 +218,9 @@ class DebiasTextProcessing:
                 reason=row["reason"],
                 steps=row["steps"],
             )
+            self.output_dataset.loc[row["row"], "input_text"] = original_text
             self.output_dataset.loc[row["row"], self.text_column] = debiased_text
+
 
     def process(self):
         self.identify_bias()
