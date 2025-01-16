@@ -4,6 +4,25 @@ import pandas as pd
 
 _Schema = TypeVar("_Schema", bound=BaseModel)
 
+_STANDARD_BIAS_EVALUATION_PROMPT = """
+The following text contains biased information, such as discrimination and stereotyping, which fall into various categories. Each category includes specific subcategories with seperated by ',' , as listed below:
+
+Category: Sub-category1, Sub-category2, Sub-category3, ...
+
+- Demographic Bias: Gender-specific, racial, ethnic, religious, age-related.
+- Social Bias: Socio-economic, educational, occupational, geographical.
+- Historical Bias: Cultural, traditional, colonial.
+- Confirmation Bias: Selective observation, cherry-picking evidence.
+- Evaluation Bias: Subjective judgment, misrepresentation in assessment.
+- Aggregation Bias: Overgeneralization, stereotyping, data grouping errors.
+- Algorithmic Bias: Model architecture, optimization processes, unfair weighting.
+- Data Bias: Imbalanced datasets, exclusion of minority groups, labeling inaccuracies.
+- Automation Bias: Overreliance on machine-generated outputs, neglecting human oversight.
+
+Please identify the category and subcategories of bias present in the text, and provide a step-by-step de-biased version with justifications for each adjustment.
+
+"""
+
 
 class _BiasDetectionRequest(BaseModel):
     """
@@ -32,7 +51,7 @@ class _BiasDetectionResponse(BaseModel):
 
         def __repr__(self):
             return f"{self.biased_word} -> {self.debiased_word};"
-        
+
         def __str__(self):
             return f"{self.biased_word} -> {self.debiased_word};"
 
@@ -50,7 +69,10 @@ class _BiasDetectionResponse(BaseModel):
     ] = Field(..., title="Category of bias")
     sub_category: str = Field(..., description="Sub-category of bias")
     bias_rationale: str = Field(..., description="Reason for bias")
-    steps: List[Step] = Field(..., description="Simple Steps to mitigate bias by changing the words or phrases in the text")
+    steps: List[Step] = Field(
+        ...,
+        description="Simple Steps to mitigate bias by changing the words or phrases in the text",
+    )
 
 
 class _TextDebiasingRequest(BaseModel):
@@ -110,14 +132,25 @@ class _DebiasingResult(BaseModel):
 
 class DebiasTextProcessing:
     def __init__(
-        self, model: str, hub: str, system_prompt: str, model_kwargs: Dict = None
+        self,
+        model: str,
+        hub: str,
+        system_prompt: str = _STANDARD_BIAS_EVALUATION_PROMPT,
+        model_kwargs: Dict = None,
     ):
         self.model = model
         self.hub = hub
         self.system_prompt = system_prompt
         self.model_kwargs = model_kwargs
         self.debias_info = pd.DataFrame(
-            columns=["row", "original text", "reason", "category", "sub_category", "steps"]
+            columns=[
+                "row",
+                "original text",
+                "reason",
+                "category",
+                "sub_category",
+                "steps",
+            ]
         )
 
     def initialize(
@@ -129,7 +162,14 @@ class DebiasTextProcessing:
 
         # reset debias_info
         self.debias_info = pd.DataFrame(
-            columns=["row", "original text", "reason", "category", "sub_category", "steps"]
+            columns=[
+                "row",
+                "original text",
+                "reason",
+                "category",
+                "sub_category",
+                "steps",
+            ]
         )
 
     def identify_bias(self):
@@ -220,7 +260,6 @@ class DebiasTextProcessing:
             )
             self.output_dataset.loc[row["row"], "input_text"] = original_text
             self.output_dataset.loc[row["row"], self.text_column] = debiased_text
-
 
     def process(self):
         self.identify_bias()
