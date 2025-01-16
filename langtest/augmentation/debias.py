@@ -180,16 +180,13 @@ class DebiasTextProcessing:
     ) -> str:
         # Placeholder for debiasing logic
         step_by_step = "\n".join(f"- {step}" for step in steps)
-        system_prompt = f"""
-        Debias the text with following bias information and reason.
-
-        Category: {category}
-        Sub-category: {sub_category}
-        Reason: {reason}
-
-        Step by Step Debiasing Instructions:
-        {step_by_step}
-        """
+        system_prompt = (
+            f"Debias the text with the following bias information and reason.\n\n"
+            f"Category: {category}\n"
+            f"Sub-category: {sub_category}\n"
+            f"Reason: {reason}\n\n"
+            f"Step by Step Debiasing Instructions:\n{step_by_step}"
+        )
 
         prompt = f"""The following text is biased. Please debias it. \nText: {text}"""
 
