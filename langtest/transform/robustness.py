@@ -2255,3 +2255,63 @@ class AddTabs(BaseRobustness):
                     sample.category = "robustness"
                 perturbed_samples.append(sample)
         return perturbed_samples
+
+
+class FCT(BaseRobustness):
+    """A class for adding alternating the true value of the input text."""
+
+    alias_name = "false_confidence_test"
+    supported_tasks = ["question-answering", "text-classification"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """Transforms the given sample list by adding false confidence to the input
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples with false confidence added
+
+        """
+        ...
+
+
+class NOTA(BaseRobustness):
+    """A class for altering the true value of the input text."""
+
+    alias_name = "none_of_the_above"
+    supported_tasks = ["question-answering", "text-classification"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """Transforms the given sample list by adding none of the above to the input
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples with none of the above added
+
+        """
+        ...
+
+
+class FQT(BaseRobustness):
+    """A class for adding false questions to the input text."""
+
+    alias_name = "false_question_test"
+    supported_tasks = ["question-answering"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample]) -> List[Sample]:
+        """Transforms the given sample list by adding false questions to the input
+
+        Args:
+            sample_list (List[Sample]): The list of samples to transform.
+
+        Returns:
+            List[Sample]: The transformed list of samples with false questions added
+
+        """
+        ...
