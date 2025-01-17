@@ -1,11 +1,13 @@
-from typing import Dict, List, Literal, TypeVar, Union
+from typing import Dict, List, Literal, TypeVar, Union, Type
 from pydantic import BaseModel, Field
 import pandas as pd
 
 _Schema = TypeVar("_Schema", bound=BaseModel)
 
 _STANDARD_BIAS_EVALUATION_PROMPT = """
-The following text contains biased information, such as discrimination and stereotyping, which fall into various categories. Each category includes specific subcategories with seperated by ',' , as listed below:
+The following text contains biased information, such as discrimination and stereotyping,
+which fall into various categories. Each category includes specific subcategories
+separated by commas, as listed below:
 
 Category: Sub-category1, Sub-category2, Sub-category3, ...
 
@@ -19,8 +21,8 @@ Category: Sub-category1, Sub-category2, Sub-category3, ...
 - Data Bias: Imbalanced datasets, exclusion of minority groups, labeling inaccuracies.
 - Automation Bias: Overreliance on machine-generated outputs, neglecting human oversight.
 
-Please identify the category and subcategories of bias present in the text, and provide a step-by-step de-biased version with justifications for each adjustment.
-
+Please identify the category and subcategories of bias present in the text, and provide a
+step-by-step de-biasing version with justifications for each adjustment.
 """
 
 
@@ -160,6 +162,9 @@ class DebiasTextProcessing:
         self.text_column = text_column
         self.output_dataset: pd.DataFrame = output_dataset
 
+        if output_dataset is None:
+            self.output_dataset = pd.DataFrame(columns=["biased_text", "debiased_text"])
+
         # reset debias_info
         self.debias_info = pd.DataFrame(
             columns=[
@@ -213,7 +218,7 @@ class DebiasTextProcessing:
         )
 
     def interaction_llm(
-        self, text: str, output_schema: type[_Schema], system_prompt: str
+        self, text: str, output_schema: Type[_Schema], system_prompt: str
     ) -> _Schema:
 
         if self.hub == "openai":
@@ -258,8 +263,8 @@ class DebiasTextProcessing:
                 reason=row["reason"],
                 steps=row["steps"],
             )
-            self.output_dataset.loc[row["row"], "input_text"] = original_text
-            self.output_dataset.loc[row["row"], self.text_column] = debiased_text
+            self.output_dataset.loc[row["row"], "biased_text"] = original_text
+            self.output_dataset.loc[row["row"], "debiased_text"] = debiased_text
 
     def process(self):
         self.identify_bias()
@@ -277,7 +282,7 @@ class DebiasTextProcessing:
             raise ValueError(f"Unsupported source type: {source_type}")
 
     def get_openai(
-        self, text, system_prompt, output_schema: type[_Schema], *args, **kwargs
+        self, text, system_prompt, output_schema: Type[_Schema], *args, **kwargs
     ) -> _Schema:
         import openai
 
@@ -295,7 +300,7 @@ class DebiasTextProcessing:
         return response.choices[0].message.parsed
 
     def get_ollama(
-        self, text, system_prompt, output_schema: type[_Schema], model_kwargs: Dict = None
+        self, text, system_prompt, output_schema: Type[_Schema], model_kwargs: Dict = None
     ) -> _Schema:
         from ollama import chat
 
