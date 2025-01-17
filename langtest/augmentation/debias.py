@@ -147,7 +147,7 @@ class DebiasTextProcessing:
         self.debias_info = pd.DataFrame(
             columns=[
                 "row",
-                "original text",
+                "biased_text",
                 "reason",
                 "category",
                 "sub_category",
@@ -169,7 +169,7 @@ class DebiasTextProcessing:
         self.debias_info = pd.DataFrame(
             columns=[
                 "row",
-                "original text",
+                "biased_text",
                 "reason",
                 "category",
                 "sub_category",
@@ -185,14 +185,14 @@ class DebiasTextProcessing:
                 if index not in self.debias_info["row"].values:
                     self.debias_info.loc[len(self.debias_info)] = {
                         "row": index,
-                        "original text": text,
+                        "biased_text": text,
                         "reason": rationale,
                         "category": category,
                         "sub_category": sub_category,
                         "steps": steps,
                     }
                 else:
-                    self.debias_info.loc[row["row"], "original text"] = text
+                    self.debias_info.loc[row["row"], "biased_text"] = text
                     self.debias_info.loc[row["row"], "reason"] = rationale
                     self.debias_info.loc[row["row"], "category"] = category
                     self.debias_info.loc[row["row"], "sub_category"] = sub_category
