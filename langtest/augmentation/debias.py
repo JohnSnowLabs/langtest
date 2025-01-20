@@ -68,9 +68,16 @@ class _BiasDetectionResponse(BaseModel):
         "algorithmic",
         "data",
         "automation",
+        "unbiased",
     ] = Field(..., title="Category of bias")
     sub_category: str = Field(..., description="Sub-category of bias")
     bias_rationale: str = Field(..., description="Reason for bias")
+    risk_level: int = Field(
+        ...,
+        le=5,
+        ge=1,
+        description="Risk Level from 1 (unbiased) to 5 (extreme bias)",
+    )
     steps: List[Step] = Field(
         ...,
         description="Simple Steps to mitigate bias by changing the words or phrases in the text",
@@ -151,6 +158,7 @@ class DebiasTextProcessing:
                 "reason",
                 "category",
                 "sub_category",
+                "risk_level",
                 "steps",
             ]
         )
@@ -168,11 +176,12 @@ class DebiasTextProcessing:
         # reset debias_info
         self.debias_info = pd.DataFrame(
             columns=[
-                "row",
+                "row_id",
                 "biased_text",
                 "reason",
                 "category",
                 "sub_category",
+                "risk_level",
                 "steps",
             ]
         )
@@ -180,23 +189,25 @@ class DebiasTextProcessing:
     def identify_bias(self):
         for index, row in self.input_dataset.iterrows():
             text = row[self.text_column]
-            category, sub_category, rationale, steps = self.detect_bias(text)
+            category, sub_category, rationale, rating, steps = self.detect_bias(text)
             if rationale:
-                if index not in self.debias_info["row"].values:
+                if index not in self.debias_info["row_id"].values:
                     self.debias_info.loc[len(self.debias_info)] = {
-                        "row": index,
+                        "row_id": index,
                         "biased_text": text,
                         "reason": rationale,
                         "category": category,
                         "sub_category": sub_category,
+                        "risk_level": rating,
                         "steps": steps,
                     }
                 else:
-                    self.debias_info.loc[row["row"], "biased_text"] = text
-                    self.debias_info.loc[row["row"], "reason"] = rationale
-                    self.debias_info.loc[row["row"], "category"] = category
-                    self.debias_info.loc[row["row"], "sub_category"] = sub_category
-                    self.debias_info.loc[row["row"], "steps"] = steps
+                    self.debias_info.loc[row["row_id"], "biased_text"] = text
+                    self.debias_info.loc[row["row_id"], "reason"] = rationale
+                    self.debias_info.loc[row["row_id"], "category"] = category
+                    self.debias_info.loc[row["row_id"], "sub_category"] = sub_category
+                    self.debias_info.loc[row["row_id"], "risk_level"] = rating
+                    self.debias_info.loc[row["row_id"], "steps"] = steps
                 self.debias_info = self.debias_info.reset_index(drop=True)
 
     def detect_bias(
@@ -214,6 +225,7 @@ class DebiasTextProcessing:
             output_data.category,
             output_data.sub_category,
             output_data.bias_rationale,
+            output_data.risk_level,
             output_data.steps,
         )
 
@@ -253,9 +265,12 @@ class DebiasTextProcessing:
 
         return debiased_text.debiased_text
 
-    def apply_debiasing(self):
-        for idx, row in self.debias_info.iterrows():
-            original_text = self.input_dataset.at[row["row"], self.text_column]
+    def apply_debiasing(self, level: int = 2):
+        # skip the rows based on the rating column if needed
+        debiased_info = self.debias_info[self.debias_info["risk_level"] > level]
+
+        for idx, row in debiased_info.iterrows():
+            original_text = self.input_dataset.at[row["row_id"], self.text_column]
             debiased_text = self.debias_text(
                 original_text,
                 category=row["category"],
@@ -263,12 +278,13 @@ class DebiasTextProcessing:
                 reason=row["reason"],
                 steps=row["steps"],
             )
-            self.output_dataset.loc[row["row"], "biased_text"] = original_text
-            self.output_dataset.loc[row["row"], "debiased_text"] = debiased_text
+            self.output_dataset.loc[row["row_id"], "biased_text"] = original_text
+            self.output_dataset.loc[row["row_id"], "debiased_text"] = debiased_text
 
-    def process(self):
+    def apply_bias_correction(self, bias_tolerance_level: int = 2):
+        """Apply bias correction to the dataset."""
         self.identify_bias()
-        self.apply_debiasing()
+        self.apply_debiasing(level=bias_tolerance_level)
         return self.output_dataset, self.debias_info
 
     def load_data(self, source: str, source_type: str):
@@ -288,16 +304,23 @@ class DebiasTextProcessing:
 
         client = openai.Client()
 
-        response = client.beta.chat.completions.parse(
+        response = client.chat.completions.create(
             model=self.model,
             messages=[
                 {"role": "system", "content": system_prompt},
                 {"role": "user", "content": text},
             ],
-            response_format=output_schema,
+            response_format={
+                "type": "json_schema",
+                "json_schema": {
+                    "name": output_schema.__name__,
+                    "schema": output_schema.model_json_schema(),
+                    "description": output_schema.__doc__,
+                },
+            },
+            **kwargs,
         )
-
-        return response.choices[0].message.parsed
+        return output_schema.model_validate_json(response.choices[0].message.content)
 
     def get_ollama(
         self, text, system_prompt, output_schema: Type[_Schema], model_kwargs: Dict = None
