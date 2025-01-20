@@ -153,7 +153,7 @@ class DebiasTextProcessing:
         self.model_kwargs = model_kwargs
         self.debias_info = pd.DataFrame(
             columns=[
-                "row",
+                "row_id",
                 "biased_text",
                 "reason",
                 "category",
