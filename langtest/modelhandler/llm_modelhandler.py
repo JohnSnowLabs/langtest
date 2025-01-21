@@ -51,6 +51,7 @@ class PretrainedModelForQA(ModelAPI):
         self.model = model
         self.hub = LANGCHAIN_HUBS[hub]
         self.kwargs = kwargs
+        self.output_schema = kwargs.get("output_schema", None)
         if isinstance(model, str):
             self.model = self.load_model(hub, model, *args, **kwargs).model
 
@@ -73,15 +74,23 @@ class PretrainedModelForQA(ModelAPI):
             ValueError: If the model is not found online or locally.
             ConfigError: If there is an error in the model configuration.
         """
-        exclude_args = ["task", "device", "stream", "model_type", "chat_template"]
 
         model_type = kwargs.get("model_type", None)
+        output_schema = kwargs.get("output_schema", None)
+
+        exclude_args = [
+            "task",
+            "device",
+            "stream",
+            "model_type",
+            "chat_template",
+            "output_schema",
+        ]
 
         filtered_kwargs = kwargs.copy()
 
         for arg in exclude_args:
             filtered_kwargs.pop(arg, None)
-
         try:
             cls._update_model_parameters(hub, filtered_kwargs)
             if path in (
@@ -103,11 +112,15 @@ class PretrainedModelForQA(ModelAPI):
                 if hub == "openai":
                     from langchain_openai.chat_models import ChatOpenAI
 
-                    model = ChatOpenAI(model=path, *args, **filtered_kwargs)
+                    model = ChatOpenAI(
+                        model=path, *args, **filtered_kwargs
+                    ).with_structured_output(output_schema)
                 elif hub == "azure-openai":
                     from langchain_openai.chat_models import AzureChatOpenAI
 
-                    model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
+                    model = AzureChatOpenAI(
+                        model=path, *args, **filtered_kwargs
+                    ).with_structured_output(output_schema)
 
                 return cls(hub, model, *args, **filtered_kwargs)
 
@@ -183,7 +196,20 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # loading a prompt manager
             from langtest.prompts import PromptManager
+            from langchain_core.messages import AIMessage
+            from langchain_core.language_models.llms import BaseLLM
+            from langchain_core.language_models.chat_models import BaseChatModel
+            from pydantic import BaseModel
 
+            # output parsing
+            output_parser = self.kwargs.get("output_schema", None)
+            if output_parser and issubclass(output_parser, BaseModel):
+                output_parser = output_parser
+            # else:
+            #     from langchain.output_parsers import PydanticOutputParser
+            #     output_parser = PydanticOutputParser(pydantic_object=output_parser)
+
+            # prompt configuration
             prompt_manager = PromptManager()
 
             prompt_template = prompt_manager.get_prompt()
@@ -191,9 +217,20 @@ class PretrainedModelForQA(ModelAPI):
             if prompt_template is None:
                 prompt_template = PromptTemplate(**prompt)
 
-            llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            # model configuration
+            model: Union[BaseChatModel, BaseLLM] = self.model
+            # llmchain = LLMChain(prompt=prompt_template, llm=self.model)
+            llmchain = prompt_template | model
+
             output = llmchain.invoke(text)
-            return output.get(llmchain.output_key, "")
+
+            if isinstance(output, dict):
+                return output.get(llmchain.output_key, "")
+            elif isinstance(output, AIMessage):
+                return output.content
+
+            return output
+
         except Exception as e:
             raise ValueError(Errors.E089(error_message=e))
 
