@@ -112,15 +112,15 @@ class PretrainedModelForQA(ModelAPI):
                 if hub == "openai":
                     from langchain_openai.chat_models import ChatOpenAI
 
-                    model = ChatOpenAI(
-                        model=path, *args, **filtered_kwargs
-                    ).with_structured_output(output_schema)
+                    model = ChatOpenAI(model=path, *args, **filtered_kwargs)
                 elif hub == "azure-openai":
                     from langchain_openai.chat_models import AzureChatOpenAI
 
-                    model = AzureChatOpenAI(
-                        model=path, *args, **filtered_kwargs
-                    ).with_structured_output(output_schema)
+                    model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
+
+                # adding output schema to the model if provided
+                if output_schema:
+                    model = model.with_structured_output(output_schema)
 
                 return cls(hub, model, *args, **filtered_kwargs)
 
@@ -196,18 +196,9 @@ class PretrainedModelForQA(ModelAPI):
         try:
             # loading a prompt manager
             from langtest.prompts import PromptManager
-            from langchain_core.messages import AIMessage
+            from langchain_core.messages import BaseMessage
             from langchain_core.language_models.llms import BaseLLM
             from langchain_core.language_models.chat_models import BaseChatModel
-            from pydantic import BaseModel
-
-            # output parsing
-            output_parser = self.kwargs.get("output_schema", None)
-            if output_parser and issubclass(output_parser, BaseModel):
-                output_parser = output_parser
-            # else:
-            #     from langchain.output_parsers import PydanticOutputParser
-            #     output_parser = PydanticOutputParser(pydantic_object=output_parser)
 
             # prompt configuration
             prompt_manager = PromptManager()
@@ -224,9 +215,7 @@ class PretrainedModelForQA(ModelAPI):
 
             output = llmchain.invoke(text)
 
-            if isinstance(output, dict):
-                return output.get(llmchain.output_key, "")
-            elif isinstance(output, AIMessage):
+            if isinstance(output, BaseMessage):
                 return output.content
 
             return output
