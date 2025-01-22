@@ -7,6 +7,7 @@ from copy import deepcopy
 from langtest.modelhandler.modelhandler import ModelAPI
 from ...errors import Errors
 from pydantic.v1 import BaseModel, PrivateAttr, validator, Field
+from pydantic import BaseModel as BaseModelV2
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
 from ...metrics import EmbeddingDistance
@@ -626,6 +627,11 @@ class QASample(BaseQASample):
         """
 
         if self.ran_pass is not None:
+            return self.ran_pass
+        elif issubclass(self.expected_results.__class__, BaseModelV2) or issubclass(
+            self.expected_results.__class__, BaseModel
+        ):
+            self.ran_pass = self.expected_results == self.actual_results
             return self.ran_pass
         elif isinstance(self.expected_results, MaxScoreOutput):
             self.ran_pass = self.expected_results >= self.actual_results
