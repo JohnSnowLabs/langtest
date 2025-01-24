@@ -1,3 +1,4 @@
+import importlib
 import inspect
 
 from typing import Any, List, Union
@@ -128,7 +129,15 @@ class PretrainedModelForQA(ModelAPI):
                 from .utils import CHAT_MODEL_CLASSES
 
                 if model_type and hub in CHAT_MODEL_CLASSES:
-                    if hasattr(chat_models, hub):
+                    if isinstance(CHAT_MODEL_CLASSES[hub], dict):
+                        module = importlib.import_module(
+                            CHAT_MODEL_CLASSES[hub]["module"]
+                        )
+                        model = getattr(
+                            module,
+                            CHAT_MODEL_CLASSES[hub][model_type],
+                        )
+                    elif hasattr(chat_models, hub):
                         hub_module = getattr(chat_models, hub)
                         model = getattr(hub_module, CHAT_MODEL_CLASSES[hub])
                     elif hasattr(chat_models, CHAT_MODEL_CLASSES[hub]):
