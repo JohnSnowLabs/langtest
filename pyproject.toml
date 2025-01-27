@@ -85,6 +85,7 @@ tables = ">=3.8.0"
 pillow = ">=11.0.0"
 langchain-databricks = {version = "0.1.1", optional = true}
 langchain-community = {version = "0.3.5", optional = true}
+ollama = {version = "^0.4.6", optional = true}
 
 [tool.poetry.extras]
 transformers = ["transformers", "torch", "accelerate", "datasets"]
@@ -101,6 +102,7 @@ datasets = ["datasets"]
 matplotlib = ["matplotlib"]
 databricks = ["langchain", "langchain-databricks", "langchain-community", "langchain-openai"]
 llms = ["langchain", "langchain-community", "langchain-openai", "langchain-databricks"]
+ollama_sdk = ["langchain", "langchain-community", "ollama"]
 
 [tool.poetry.group.dev.dependencies]
 ipdb = "^0.13.13"

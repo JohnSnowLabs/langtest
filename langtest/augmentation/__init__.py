@@ -1,4 +1,11 @@
 from .base import BaseAugmentaion, AugmentRobustness, TemplaticAugment
 from .augmenter import DataAugmenter
+from .debias import DebiasTextProcessing
 
-__all__ = ["BaseAugmentaion", "AugmentRobustness", "TemplaticAugment", "DataAugmenter"]
+__all__ = [
+    "DebiasTextProcessing",
+    "BaseAugmentaion",
+    "AugmentRobustness",
+    "TemplaticAugment",
+    "DataAugmenter",
+]
