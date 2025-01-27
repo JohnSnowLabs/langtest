@@ -6,6 +6,7 @@ import langchain.llms as lc
 import langchain.chat_models as chat_models
 from langchain.chains.llm import LLMChain
 from langchain_core.prompts import PromptTemplate
+from langchain_core.language_models.base import BaseLanguageModel
 from langchain_core.exceptions import OutputParserException
 from pydantic.v1 import Field, ValidationError
 
@@ -94,63 +95,52 @@ class PretrainedModelForQA(ModelAPI):
             filtered_kwargs.pop(arg, None)
         try:
             cls._update_model_parameters(hub, filtered_kwargs)
-            if path in (
-                "gpt-4o-mini",
-                "gpt-4",
-                "gpt-3.5-turbo",
-                "gpt-4-1106-preview",
-                "gpt-4-turbo-2024-04-09",
-                "gpt-4-0125-preview",
-                "gpt-3.5-turbo-0125",
-                "gpt-4-turbo-preview",
-                "gpt-4-vision-preview",
-                "gpt-3.5-turbo-1106",
-                "gpt-4o-2024-05-13",
-                "gpt-4o",
-                "o1-preview",
-                "o1-mini",
-            ) and hub in ["openai", "azure-openai"]:
-                if hub == "openai":
-                    from langchain_openai.chat_models import ChatOpenAI
 
-                    model = ChatOpenAI(model=path, *args, **filtered_kwargs)
-                elif hub == "azure-openai":
-                    from langchain_openai.chat_models import AzureChatOpenAI
+            from .utils import MODEL_CLASSES
 
-                    model = AzureChatOpenAI(model=path, *args, **filtered_kwargs)
+            if model_type and hub in MODEL_CLASSES:
+                class_var = MODEL_CLASSES[hub][model_type]["class_name"]
+                if isinstance(MODEL_CLASSES[hub], dict):
+                    module = importlib.import_module(
+                        MODEL_CLASSES[hub][model_type]["module"]
+                    )
+                    model: BaseLanguageModel = getattr(
+                        module,
+                        class_var,
+                    )
+                elif hasattr(chat_models, hub):
+                    hub_module = getattr(chat_models, hub)
+                    model: BaseLanguageModel = getattr(hub_module, class_var)
+                elif hasattr(chat_models, class_var):
+                    model: BaseLanguageModel = getattr(chat_models, class_var)
+                else:
+                    raise ValueError(Errors.E044(path=path))
 
-                # adding output schema to the model if provided
-                if output_schema:
-                    model = model.with_structured_output(output_schema)
-
-                return cls(hub, model, *args, **filtered_kwargs)
-
-            else:
-                from .utils import CHAT_MODEL_CLASSES
-
-                if model_type and hub in CHAT_MODEL_CLASSES:
-                    if isinstance(CHAT_MODEL_CLASSES[hub], dict):
+            elif model_type in [None, "completion"]:
+                if model_type is None:
+                    model_type = "completion"
+                if hub in MODEL_CLASSES:
+                    if isinstance(MODEL_CLASSES[hub], dict):
                         module = importlib.import_module(
-                            CHAT_MODEL_CLASSES[hub]["module"]
+                            MODEL_CLASSES[hub][model_type]["module"]
                         )
-                        model = getattr(
+                        model: BaseLanguageModel = getattr(
                             module,
-                            CHAT_MODEL_CLASSES[hub][model_type],
+                            MODEL_CLASSES[hub][model_type]["class_name"],
                         )
-                    elif hasattr(chat_models, hub):
-                        hub_module = getattr(chat_models, hub)
-                        model = getattr(hub_module, CHAT_MODEL_CLASSES[hub])
-                    elif hasattr(chat_models, CHAT_MODEL_CLASSES[hub]):
-                        model = getattr(chat_models, CHAT_MODEL_CLASSES[hub])
+                    elif hasattr(lc, LANGCHAIN_HUBS[hub]):
+                        model: BaseLanguageModel = getattr(lc, LANGCHAIN_HUBS[hub])
+                    elif hasattr(lc, MODEL_CLASSES[hub]):
+                        model: BaseLanguageModel = getattr(lc, MODEL_CLASSES[hub])
                     else:
                         raise ValueError(Errors.E044(path=path))
-
-                elif model_type in [None, "completion"]:
-                    model = getattr(lc, LANGCHAIN_HUBS[hub])
                 else:
-                    raise ValueError(
-                        f"{hub} hub is not supported for the given model type"
-                    )
+                    model: BaseLanguageModel = getattr(lc, LANGCHAIN_HUBS[hub])
+            else:
+                raise ValueError(f"{hub} hub is not supported for the given model type")
+
+            # checking if the model has a model parameter
+
             default_args = inspect.getfullargspec(model).kwonlyargs
             if "model" in default_args:
                 cls.model = model(model=path, *args, **filtered_kwargs)
@@ -163,10 +153,17 @@ class PretrainedModelForQA(ModelAPI):
             # mapping path dict to model object
             else:
                 cls.model = model(**path)
+
+            # adding output schema to the model if provided
+            if hub in ["azure-openai", "openai"] and output_schema:
+
+                cls.model: BaseLanguageModel = cls.model.with_structured_output(
+                    output_schema
+                )
             return cls(hub, cls.model, *args, **filtered_kwargs)
 
         except ModuleNotFoundError:
-            module = CHAT_MODEL_CLASSES[hub].get("module", None)
+            module = MODEL_CLASSES[hub].get("module", None)
             if module:
                 package_name = module.split(".")[0]
                 raise ValueError(Errors.E078(hub=hub, lib=package_name))
