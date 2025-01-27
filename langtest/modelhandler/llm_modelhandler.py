@@ -155,10 +155,11 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(**path)
 
             # adding output schema to the model if provided
-            if hub in ["azure-openai", "openai"] and output_schema:
+            if hub in ["azure-openai", "openai", "ollama"] and output_schema:
 
                 cls.model: BaseLanguageModel = cls.model.with_structured_output(
-                    output_schema
+                    output_schema,
+                    **({"method": "json_schema"} if hub == "ollama" else {}),
                 )
             return cls(hub, cls.model, *args, **filtered_kwargs)
 
