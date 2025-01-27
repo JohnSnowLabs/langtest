@@ -165,6 +165,12 @@ class PretrainedModelForQA(ModelAPI):
                 cls.model = model(**path)
             return cls(hub, cls.model, *args, **filtered_kwargs)
 
+        except ModuleNotFoundError:
+            module = CHAT_MODEL_CLASSES[hub].get("module", None)
+            if module:
+                package_name = module.split(".")[0]
+                raise ValueError(Errors.E078(hub=hub, lib=package_name))
+            raise ValueError(Errors.E078(hub=hub, lib=package_name))
         except ImportError:
             raise ValueError(Errors.E044(path=path))
         except ValidationError as e:
