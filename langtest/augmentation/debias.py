@@ -5,24 +5,30 @@ import pandas as pd
 _Schema = TypeVar("_Schema", bound=BaseModel)
 
 _STANDARD_BIAS_EVALUATION_PROMPT = """
-The following text contains biased information, such as discrimination and stereotyping,
-which fall into various categories. Each category includes specific subcategories
-separated by commas, as listed below:
+The provided text may contains biased information, including discrimination and stereotyping, categorized as follows:
 
+### Bias Detection Categories and Subcategories
 Category: Sub-category1, Sub-category2, Sub-category3, ...
 
-- Demographic Bias: Gender-specific, racial, ethnic, religious, age-related.
-- Social Bias: Socio-economic, educational, occupational, geographical.
-- Historical Bias: Cultural, traditional, colonial.
-- Confirmation Bias: Selective observation, cherry-picking evidence.
-- Evaluation Bias: Subjective judgment, misrepresentation in assessment.
-- Aggregation Bias: Overgeneralization, stereotyping, data grouping errors.
-- Algorithmic Bias: Model architecture, optimization processes, unfair weighting.
-- Data Bias: Imbalanced datasets, exclusion of minority groups, labeling inaccuracies.
-- Automation Bias: Overreliance on machine-generated outputs, neglecting human oversight.
+- **Demographic Bias**: Gender-specific, racial, ethnic, religious, age-related.
+- **Social Bias**: Socio-economic, educational, occupational, geographical.
+- **Historical Bias**: Cultural, traditional, colonial.
+- **Confirmation Bias**: Selective observation, cherry-picking evidence.
+- **Evaluation Bias**: Subjective judgment, misrepresentation in assessment.
+- **Aggregation Bias**: Overgeneralization, stereotyping, data grouping errors.
+- **Algorithmic Bias**: Model design, optimization, unfair weighting.
+- **Data Bias**: Imbalanced datasets, exclusion of minorities, labeling errors.
+- **Automation Bias**: Overreliance on automated outputs, neglecting human oversight.
 
-Please identify the category and subcategories of bias present in the text, and provide a
-step-by-step de-biasing version with justifications for each adjustment.
+### Unbiased Categories and Subcategories
+Category: subcategory1, subcategory2, subcategory3, ...
+- **Unbiased**: fair, equitable, no bias detected.
+
+### Task Instructions
+1. **Identify Bias**: Determine the category and subcategories of bias in the text if no bias found in text follow the unbiased categories and subcategories.
+2. **Rate Bias**: Provide a rating based on the severity level (Low to Critical).
+3. **De-bias the Text**: Provide a step-by-step rephrased version of the text, justifying each adjustment.
+
 """
 
 
