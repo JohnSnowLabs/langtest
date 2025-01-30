@@ -3,6 +3,7 @@ import asyncio
 from collections import defaultdict
 import logging
 import random
+import re
 from typing import List, Dict, TypedDict, Union
 
 import importlib_resources
@@ -664,4 +665,76 @@ class FCT(BaseClincial):
                 sample.state = "done"
             if progress_bar:
                 progress_bar.update(1)
+        return sample_list
+
+
+class NOTA(BaseClincial):
+    """
+    NOTA class for the clinical tests
+    """
+
+    alias_name = "nota"
+    supported_tasks = ["question-answering", "text-generation"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """Transform method for the NOTA class"""
+
+        # CHECK THE EXPECTED RESULTS AND REPLACE WITH NONE OF THE ABOVE
+        transformed_samples = []
+        for sample in sample_list:
+            if sample.expected_results is None:
+                continue
+            sample.category = "clinical"
+
+            true_answer = "\n".join(map(str, sample.expected_results))
+            options = sample.options
+            if options is None:
+                continue
+            if (
+                true_answer in options
+                and isinstance(options, str)
+                and isinstance(true_answer, str)
+            ):
+                # split by any letter. or number. or ) by re
+                options = re.sub(rf"{true_answer[3:]}", "None of the above", options)
+            elif (
+                true_answer in options
+                and isinstance(options, list)
+                and isinstance(true_answer, str)
+            ):
+                options = [
+                    re.sub(rf"{true_answer}", "None of the above", option)
+                    for option in options
+                ]
+            sample.options = options
+
+            sample.expected_results = "None of the above"
+            sample.perturbed_context = ""
+            sample.perturbed_question = ""
+            transformed_samples.append(sample)
+
+        return transformed_samples
+
+    @staticmethod
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
+        """Run method for the NOTA class"""
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if sample.state != "done":
+                original_text_input = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    options=sample.options,
+                )
+                prompt = build_qa_prompt(
+                    original_text_input, "default_question_answering_prompt", **kwargs
+                )
+                sample.actual_results = model(original_text_input, prompt=prompt)
+                sample.state = "done"
+            if progress_bar:
+                progress_bar.update(1)
+
         return sample_list
