@@ -608,7 +608,6 @@ class FCT(BaseClincial):
     def transform(sample_list: List[Sample], *args, **kwargs):
         """Transform method for the FCT class"""
 
-        # interchange the options field with another field and add None to the options
         transformed_samples = []
         upper_bound = len(sample_list) - 3
         append = transformed_samples.append
@@ -623,15 +622,11 @@ class FCT(BaseClincial):
 
             if hasattr(sample, "options") and sample.options not in ["-", None]:
                 if isinstance(selected_sample.options, list):
-                    sample.options = selected_sample.options + [
-                        "{{Last}}: None of the above"
-                    ]
+                    sample.options = selected_sample.options + ["F. None of the above"]
                 elif isinstance(
                     selected_sample.options, str
-                ) and not selected_sample.options.endswith("{{Last}}: None of the above"):
-                    sample.options = (
-                        f"{selected_sample.options}\n{{Last}}: None of the above"
-                    )
+                ) and not selected_sample.options.endswith("F. None of the above"):
+                    sample.options = f"{selected_sample.options}\nF. None of the above"
             elif hasattr(sample, "original_context") and sample.original_context not in [
                 "-",
                 None,
@@ -680,7 +675,6 @@ class NOTA(BaseClincial):
     def transform(sample_list: List[Sample], *args, **kwargs):
         """Transform method for the NOTA class"""
 
-        # CHECK THE EXPECTED RESULTS AND REPLACE WITH NONE OF THE ABOVE
         transformed_samples = []
         for sample in sample_list:
             if sample.expected_results is None:
