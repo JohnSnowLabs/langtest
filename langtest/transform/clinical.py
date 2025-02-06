@@ -610,8 +610,12 @@ class FCT(BaseClincial):
 
         transformed_samples = []
         upper_bound = len(sample_list) - 3
-        append = transformed_samples.append
+
         for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+
+                continue
+
             sample.category = "clinical"
             selected = (
                 random.randint(idx, upper_bound) if idx <= upper_bound else upper_bound
@@ -636,7 +640,7 @@ class FCT(BaseClincial):
             sample.perturbed_context = ""
             sample.perturbed_question = ""
             sample.expected_results = "None of the above"
-            append(sample)
+            transformed_samples.append(sample)
 
         return transformed_samples
 
@@ -683,6 +687,7 @@ class NOTA(BaseClincial):
 
             true_answer = "\n".join(map(str, sample.expected_results))
             options = sample.options
+
             if options is None:
                 continue
             if (
