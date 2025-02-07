@@ -737,3 +737,64 @@ class NOTA(BaseClincial):
                 progress_bar.update(1)
 
         return sample_list
+
+
+class FQT(BaseClincial):
+    """
+    FQT class for the clinical tests
+    """
+
+    alias_name = "fqt"
+    supported_tasks = ["question-answering", "text-generation"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """Transform method for the FQT class"""
+
+        transformed_samples = []
+
+        questions = [q.original_question for q in sample_list if isinstance(q, QASample)]
+
+        # randomly select a question and swap it with another question
+
+        for sample in sample_list:
+            sample.category = "clinical"
+            if (
+                sample.original_question is None
+                or sample.original_context is None
+                or len(sample.original_question) < 2
+            ):
+                continue
+            if isinstance(sample, QASample):
+                selected = random.choice(questions)
+                sample.original_question = selected
+                sample.expected_results = "None of the above"
+                sample.perturbed_context = ""
+                sample.perturbed_question = ""
+
+            transformed_samples.append(sample)
+
+        return transformed_samples
+
+    @staticmethod
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
+        """Run method for the FQT class"""
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if sample.state != "done":
+                original_text_input = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    # options=(sample.options if sample.options else ""),
+                )
+                prompt = build_qa_prompt(
+                    original_text_input, "default_question_answering_prompt", **kwargs
+                )
+                sample.actual_results = model(original_text_input, prompt=prompt)
+                sample.state = "done"
+            if progress_bar:
+                progress_bar.update(1)
+
+        return sample_list
