@@ -1,6 +1,7 @@
 from typing import Dict, List, Literal, TypeVar, Union, Type
 from pydantic import BaseModel, Field
 import pandas as pd
+from tqdm import tqdm
 
 _Schema = TypeVar("_Schema", bound=BaseModel)
 
@@ -193,7 +194,15 @@ class DebiasTextProcessing:
         )
 
     def identify_bias(self):
-        for index, row in self.input_dataset.iterrows():
+
+        # tqdm to show progress bar
+        tqdm_var = tqdm(
+            self.input_dataset.iterrows(),
+            total=len(self.input_dataset),
+            desc="Detecting Bias",
+        )
+
+        for index, row in tqdm_var:
             text = row[self.text_column]
             category, sub_category, rationale, rating, steps = self.detect_bias(text)
             if rationale:
@@ -274,8 +283,12 @@ class DebiasTextProcessing:
     def apply_debiasing(self, level: int = 2):
         # skip the rows based on the rating column if needed
         debiased_info = self.debias_info[self.debias_info["risk_level"] > level]
-
-        for idx, row in debiased_info.iterrows():
+        tqdm_var = tqdm(
+            debiased_info.iterrows(),
+            total=len(debiased_info),
+            desc="Debiasing Text",
+        )
+        for idx, row in tqdm_var:
             original_text = self.input_dataset.at[row["row_id"], self.text_column]
             debiased_text = self.debias_text(
                 original_text,
@@ -314,7 +327,7 @@ class DebiasTextProcessing:
             model=self.model,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": text},
+                {"role": "user", "content": f"```text\n{text}```"},
             ],
             response_format={
                 "type": "json_schema",
@@ -337,7 +350,7 @@ class DebiasTextProcessing:
             model=self.model,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": text},
+                {"role": "user", "content": f"```text\n{text}```"},
             ],
             format=output_schema.model_json_schema(),
             options=model_kwargs,
