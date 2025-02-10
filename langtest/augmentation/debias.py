@@ -57,6 +57,7 @@ class _BiasDetectionResponse(BaseModel):
     class Step(BaseModel):
         biased_word: str
         debiased_word: str
+        is_pronoun: bool = Field(default=False)
 
         def __repr__(self):
             return f"{self.biased_word} -> {self.debiased_word};"
