@@ -237,6 +237,27 @@ class DebiasTextProcessing:
             text, output_schema=_BiasDetectionResponse, system_prompt=self.system_prompt
         )
 
+        # Placeholder for debiasing logic
+        if output_data.sub_category.lower() == "gender-specific":
+            pronoun_map = {
+                "he": "they",
+                "his": "their",
+                "him": "them",
+                "she": "they",
+                "her": "their",
+                "hers": "theirs",
+                "himself": "themselves",
+                "herself": "themselves",
+            }
+            # Add pronoun changes to steps
+            for gendered, neutral in pronoun_map.items():
+                if f" {gendered} " in text:
+                    output_data.steps.append(
+                        _BiasDetectionResponse.Step(
+                            biased_word=gendered, debiased_word=neutral, is_pronoun=True
+                        )
+                    )
+
         return (
             output_data.category,
             output_data.sub_category,
@@ -263,23 +284,7 @@ class DebiasTextProcessing:
     def debias_text(
         self, text: str, category: str, sub_category: str, reason: str, steps: List[str]
     ) -> str:
-        # Placeholder for debiasing logic
-        if sub_category.lower() == "gender-specific":
-            pronoun_map = {
-                "he": "they", "his": "their", "him": "them",
-                "she": "they", "her": "their", "hers": "theirs",
-                "himself": "themselves", "herself": "themselves"
-            }
-            # Add pronoun changes to steps
-            for gendered, neutral in pronoun_map.items():
-                if f" {gendered} " in text:
-                    steps.append(_BiasDetectionResponse.Step(
-                        biased_word=gendered,
-                        debiased_word=neutral,
-                        is_pronoun=True
-                    ))
-                text = text.replace(f" {gendered} ", f" {neutral} ")
-                
+
         step_by_step = "\n".join(f"- {str(step)}" for step in steps)
         system_prompt = (
             f"Debias the text with the following bias information and reason.\n\n"
