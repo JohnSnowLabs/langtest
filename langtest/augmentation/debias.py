@@ -1,3 +1,4 @@
+import re
 from typing import Dict, List, Literal, TypeVar, Union, Type
 from pydantic import BaseModel, Field
 import pandas as pd
@@ -204,10 +205,10 @@ class DebiasTextProcessing:
         )
 
         for index, row in tqdm_var:
-            text = row[self.text_column]
-            category, sub_category, rationale, rating, steps = self.detect_bias(text)
-            if rationale:
-                if index not in self.debias_info["row_id"].values:
+            try:
+                text = row[self.text_column]
+                category, sub_category, rationale, rating, steps = self.detect_bias(text)
+                if rationale and index not in self.debias_info["row_id"].values:
                     self.debias_info.loc[len(self.debias_info)] = {
                         "row_id": index,
                         "biased_text": text,
@@ -225,6 +226,8 @@ class DebiasTextProcessing:
                     self.debias_info.loc[row["row_id"], "risk_level"] = rating
                     self.debias_info.loc[row["row_id"], "steps"] = steps
                 self.debias_info = self.debias_info.reset_index(drop=True)
+            except Exception:
+                continue
 
     def detect_bias(
         self, text: Union[str, _BiasDetectionRequest]
@@ -236,9 +239,10 @@ class DebiasTextProcessing:
         output_data = self.interaction_llm(
             text, output_schema=_BiasDetectionResponse, system_prompt=self.system_prompt
         )
-
+        # regex for gender-specific words
+        gender_match = re.compile(r"^gender(?:ed)?[-_]specific$", re.IGNORECASE)
         # Placeholder for debiasing logic
-        if output_data.sub_category.lower() == "gender-specific":
+        if gender_match.match(output_data.sub_category):
             pronoun_map = {
                 "he": "they",
                 "his": "their",
@@ -311,16 +315,19 @@ class DebiasTextProcessing:
             desc="Debiasing Text",
         )
         for idx, row in tqdm_var:
-            original_text = self.input_dataset.at[row["row_id"], self.text_column]
-            debiased_text = self.debias_text(
-                original_text,
-                category=row["category"],
-                sub_category=row["sub_category"],
-                reason=row["reason"],
-                steps=row["steps"],
-            )
-            self.output_dataset.loc[row["row_id"], "biased_text"] = original_text
-            self.output_dataset.loc[row["row_id"], "debiased_text"] = debiased_text
+            try:
+                original_text = self.input_dataset.at[row["row_id"], self.text_column]
+                debiased_text = self.debias_text(
+                    original_text,
+                    category=row["category"],
+                    sub_category=row["sub_category"],
+                    reason=row["reason"],
+                    steps=row["steps"],
+                )
+                self.output_dataset.loc[row["row_id"], "biased_text"] = original_text
+                self.output_dataset.loc[row["row_id"], "debiased_text"] = debiased_text
+            except Exception:
+                continue
 
     def apply_bias_correction(self, bias_tolerance_level: int = 2):
         """Apply bias correction to the dataset."""
@@ -349,7 +356,7 @@ class DebiasTextProcessing:
             model=self.model,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"```text\n{text}```"},
+                {"role": "user", "content": text},
             ],
             response_format={
                 "type": "json_schema",
@@ -372,7 +379,7 @@ class DebiasTextProcessing:
             model=self.model,
             messages=[
                 {"role": "system", "content": system_prompt},
-                {"role": "user", "content": f"```text\n{text}```"},
+                {"role": "user", "content": text},
             ],
             format=output_schema.model_json_schema(),
             options=model_kwargs,
