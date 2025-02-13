@@ -2,6 +2,7 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any, List, Union, Dict, Tuple
 from functools import lru_cache
+from langtest.utils.custom_types.helpers import HashableDict
 from langtest.utils.custom_types.output import TranslationOutput
 
 from ..modelhandler import ModelAPI
@@ -103,6 +104,7 @@ if try_import_lib("sparknlp_jsl"):
         MedicalNerModel,
         MedicalBertForSequenceClassification,
         MedicalDistilBertForSequenceClassification,
+        MedicalQuestionAnswering,
     )
 
     SUPPORTED_SPARKNLP_NER_MODELS.extend(
@@ -126,6 +128,8 @@ if try_import_lib("sparknlp_jsl"):
             MedicalDistilBertForSequenceClassification,
         ]
     )
+
+    SUPPORTED_SPARKNLP_QA = [MedicalQuestionAnswering]
 
 
 class PretrainedJSLModel(ABC):
@@ -204,10 +208,15 @@ class PretrainedJSLModel(ABC):
         raise NotImplementedError()
 
     def __call__(
-        self, text: str
+        self, text: str, *args, **kwargs
     ) -> Union[NEROutput, SequenceClassificationOutput, TranslationOutput]:
         """Alias of the 'predict' method"""
-        return self.predict(text=text)
+        if isinstance(text, dict):
+            text = HashableDict(**text)
+        kwargs = {
+            k: HashableDict(**v) if isinstance(v, dict) else v for k, v in kwargs.items()
+        }
+        return self.predict(text=text, *args, **kwargs)
 
 
 class PretrainedModelForNER(PretrainedJSLModel, ModelAPI):
@@ -554,4 +563,80 @@ class PretrainedModelForTranslation(PretrainedJSLModel, ModelAPI):
         """
         prediction_metadata = self.model.fullAnnotate(text)[0]["translation"]
         prediction = [x.result for x in prediction_metadata]
+        return prediction
+
+
+class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
+    """Pretrained model for question answering tasks"""
+
+    task = "question-answering"
+
+    def __init__(
+        self,
+        model: Union[
+            "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
+        ],
+    ):
+        """Constructor class
+
+        Args:
+            model (LightPipeline):
+                Loaded SparkNLP LightPipeline for inference.
+        """
+        super().__init__(model)
+
+        _qa_model = None
+        for annotator in self.model.stages:
+            if self.is_qa_annotator(annotator):
+                _qa_model = annotator
+                break
+
+        if _qa_model is None:
+            raise ValueError(Errors.E040(var="QA"))
+
+        self.output_col = "answer"
+        self.model = LightPipeline(self.model)
+
+    @staticmethod
+    def is_qa_annotator(model_instance) -> bool:
+        """Check QA model instance is supported by langtest"""
+        for model in SUPPORTED_SPARKNLP_QA:
+            if isinstance(model_instance, model):
+                return True
+        return False
+
+    @lru_cache(maxsize=102400)
+    def predict(self, text: Union[str, Dict], *args, **kwargs) -> Dict[str, Any]:
+        """Perform predictions with SparkNLP LightPipeline on the input text.
+
+        Args:
+            text (str): Input text to perform question answering on.
+
+        Returns:
+            Dict[str, Any]: Question answering output from SparkNLP LightPipeline.
+        """
+        if isinstance(text, dict):
+            context = text["context"]
+            question = text["question"]
+        else:
+            question = text
+            context = ""
+        prediction_metadata = self.model.fullAnnotate([context], [question])[0][
+            self.output_col
+        ]
+        prediction = prediction_metadata[0].result
+
+        return prediction
+
+    def predict_raw(self, text: str) -> List[str]:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform question answering on.
+
+        Returns:
+            List[str]: Predictions as a list of strings.
+        """
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col]
+        prediction = prediction_metadata[0].result
         return prediction
