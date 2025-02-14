@@ -107,6 +107,7 @@ if try_import_lib("sparknlp_jsl"):
         MedicalDistilBertForSequenceClassification,
         MedicalQuestionAnswering,
         MedicalSummarizer,
+        ExtractiveSummarization,
         MedicalTextGenerator,
     )
 
@@ -134,7 +135,10 @@ if try_import_lib("sparknlp_jsl"):
 
     SUPPORTED_SPARKNLP_QA = [MedicalQuestionAnswering]
 
-    SUPPORTED_SPARKNLP_SUMMARIZATION = [MedicalSummarizer]
+    SUPPORTED_SPARKNLP_SUMMARIZATION = [
+        MedicalSummarizer,
+        ExtractiveSummarization,
+    ]
 
     SUPPORTED_SPARKNLP_TEXT_GENERATION = [MedicalTextGenerator]
 
