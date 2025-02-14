@@ -2,6 +2,7 @@ import os
 from abc import ABC, abstractmethod
 from typing import Any, List, Union, Dict, Tuple
 from functools import lru_cache
+
 from langtest.utils.custom_types.helpers import HashableDict
 from langtest.utils.custom_types.output import TranslationOutput
 
@@ -105,6 +106,8 @@ if try_import_lib("sparknlp_jsl"):
         MedicalBertForSequenceClassification,
         MedicalDistilBertForSequenceClassification,
         MedicalQuestionAnswering,
+        MedicalSummarizer,
+        MedicalTextGenerator,
     )
 
     SUPPORTED_SPARKNLP_NER_MODELS.extend(
@@ -130,6 +133,10 @@ if try_import_lib("sparknlp_jsl"):
     )
 
     SUPPORTED_SPARKNLP_QA = [MedicalQuestionAnswering]
+
+    SUPPORTED_SPARKNLP_SUMMARIZATION = [MedicalSummarizer]
+
+    SUPPORTED_SPARKNLP_TEXT_GENERATION = [MedicalTextGenerator]
 
 
 class PretrainedJSLModel(ABC):
@@ -637,6 +644,78 @@ class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
         Returns:
             List[str]: Predictions as a list of strings.
         """
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col]
+        prediction = prediction_metadata[0].result
+        return prediction
+
+
+class PretrainedModelForSummarization(PretrainedJSLModel, ModelAPI):
+    """Pretrained model for summarization tasks"""
+
+    task = "summarization"
+
+    def __init__(
+        self,
+        model: Union[
+            "NLUPipeline", "PretrainedPipeline", "LightPipeline", "PipelineModel"
+        ],
+    ):
+        """Constructor class
+
+        Args:
+            model (LightPipeline):
+                Loaded SparkNLP LightPipeline for inference.
+        """
+        super().__init__(model)
+
+        _summarizer = None
+        for annotator in self.model.stages:
+            if self.is_summarizer(annotator):
+                _summarizer = annotator
+                break
+
+        if _summarizer is None:
+            raise ValueError(Errors.E040(var="summarizer"))
+
+        self.output_col = "summary"
+        self.model = LightPipeline(self.model)
+
+    @staticmethod
+    def is_summarizer(model_instance) -> bool:
+        """Check summarizer model instance is supported by langtest"""
+        for model in SUPPORTED_SPARKNLP_SUMMARIZATION:
+            if isinstance(model_instance, model):
+                return True
+        return False
+
+    @lru_cache(maxsize=102400)
+    def predict(self, text: str, *args, **kwargs) -> str:
+        """Perform predictions with SparkNLP LightPipeline on the input text.
+
+        Args:
+            text (str): Input text to perform summarization on.
+
+        Returns:
+            str: Summarization output from SparkNLP LightPipeline.
+        """
+        if isinstance(text, dict):
+            text = text["context"]
+        prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col]
+        prediction = prediction_metadata[0].result
+
+        return prediction
+
+    def predict_raw(self, text: str) -> List[str]:
+        """Perform predictions on the input text.
+
+        Args:
+            text (str): Input text to perform summarization on.
+
+        Returns:
+            List[str]: Predictions as a list of strings.
+        """
+        if isinstance(text, dict):
+            text = text["context"]
         prediction_metadata = self.model.fullAnnotate(text)[0][self.output_col]
         prediction = prediction_metadata[0].result
         return prediction
