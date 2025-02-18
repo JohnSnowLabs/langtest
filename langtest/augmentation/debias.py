@@ -1,6 +1,8 @@
+import re
 from typing import Dict, List, Literal, TypeVar, Union, Type
 from pydantic import BaseModel, Field
 import pandas as pd
+from tqdm import tqdm
 
 _Schema = TypeVar("_Schema", bound=BaseModel)
 
@@ -56,6 +58,7 @@ class _BiasDetectionResponse(BaseModel):
     class Step(BaseModel):
         biased_word: str
         debiased_word: str
+        is_pronoun: bool = Field(default=False)
 
         def __repr__(self):
             return f"{self.biased_word} -> {self.debiased_word};"
@@ -193,11 +196,19 @@ class DebiasTextProcessing:
         )
 
     def identify_bias(self):
-        for index, row in self.input_dataset.iterrows():
-            text = row[self.text_column]
-            category, sub_category, rationale, rating, steps = self.detect_bias(text)
-            if rationale:
-                if index not in self.debias_info["row_id"].values:
+
+        # tqdm to show progress bar
+        tqdm_var = tqdm(
+            self.input_dataset.iterrows(),
+            total=len(self.input_dataset),
+            desc="Detecting Bias",
+        )
+
+        for index, row in tqdm_var:
+            try:
+                text = row[self.text_column]
+                category, sub_category, rationale, rating, steps = self.detect_bias(text)
+                if rationale and index not in self.debias_info["row_id"].values:
                     self.debias_info.loc[len(self.debias_info)] = {
                         "row_id": index,
                         "biased_text": text,
@@ -215,6 +226,8 @@ class DebiasTextProcessing:
                     self.debias_info.loc[row["row_id"], "risk_level"] = rating
                     self.debias_info.loc[row["row_id"], "steps"] = steps
                 self.debias_info = self.debias_info.reset_index(drop=True)
+            except Exception:
+                continue
 
     def detect_bias(
         self, text: Union[str, _BiasDetectionRequest]
@@ -226,6 +239,28 @@ class DebiasTextProcessing:
         output_data = self.interaction_llm(
             text, output_schema=_BiasDetectionResponse, system_prompt=self.system_prompt
         )
+        # regex for gender-specific words
+        gender_match = re.compile(r"^gender(?:ed)?[-_]specific$", re.IGNORECASE)
+        # Placeholder for debiasing logic
+        if gender_match.match(output_data.sub_category):
+            pronoun_map = {
+                "he": "they",
+                "his": "their",
+                "him": "them",
+                "she": "they",
+                "her": "their",
+                "hers": "theirs",
+                "himself": "themselves",
+                "herself": "themselves",
+            }
+            # Add pronoun changes to steps
+            for gendered, neutral in pronoun_map.items():
+                if f" {gendered} " in text:
+                    output_data.steps.append(
+                        _BiasDetectionResponse.Step(
+                            biased_word=gendered, debiased_word=neutral, is_pronoun=True
+                        )
+                    )
 
         return (
             output_data.category,
@@ -253,7 +288,7 @@ class DebiasTextProcessing:
     def debias_text(
         self, text: str, category: str, sub_category: str, reason: str, steps: List[str]
     ) -> str:
-        # Placeholder for debiasing logic
+
         step_by_step = "\n".join(f"- {str(step)}" for step in steps)
         system_prompt = (
             f"Debias the text with the following bias information and reason.\n\n"
@@ -274,18 +309,25 @@ class DebiasTextProcessing:
     def apply_debiasing(self, level: int = 2):
         # skip the rows based on the rating column if needed
         debiased_info = self.debias_info[self.debias_info["risk_level"] > level]
-
-        for idx, row in debiased_info.iterrows():
-            original_text = self.input_dataset.at[row["row_id"], self.text_column]
-            debiased_text = self.debias_text(
-                original_text,
-                category=row["category"],
-                sub_category=row["sub_category"],
-                reason=row["reason"],
-                steps=row["steps"],
-            )
-            self.output_dataset.loc[row["row_id"], "biased_text"] = original_text
-            self.output_dataset.loc[row["row_id"], "debiased_text"] = debiased_text
+        tqdm_var = tqdm(
+            debiased_info.iterrows(),
+            total=len(debiased_info),
+            desc="Debiasing Text",
+        )
+        for idx, row in tqdm_var:
+            try:
+                original_text = self.input_dataset.at[row["row_id"], self.text_column]
+                debiased_text = self.debias_text(
+                    original_text,
+                    category=row["category"],
+                    sub_category=row["sub_category"],
+                    reason=row["reason"],
+                    steps=row["steps"],
+                )
+                self.output_dataset.loc[row["row_id"], "biased_text"] = original_text
+                self.output_dataset.loc[row["row_id"], "debiased_text"] = debiased_text
+            except Exception:
+                continue
 
     def apply_bias_correction(self, bias_tolerance_level: int = 2):
         """Apply bias correction to the dataset."""
