@@ -193,7 +193,14 @@ class PretrainedModelForQA(ModelAPI):
 
             llmchain = LLMChain(prompt=prompt_template, llm=self.model)
             output = llmchain.invoke(text)
-            return output.get(llmchain.output_key, "")
+            output = output.get(llmchain.output_key, "")
+            # check the output contains the <think> tag with close tag </think> using regex
+            if "<think>" in output and "</think>" in output:
+                _, final_answer = output.split("</think>")
+                final_answer = final_answer.replace("</think>", "")
+                return final_answer
+            return output
+
         except Exception as e:
             raise ValueError(Errors.E089(error_message=e))
 
