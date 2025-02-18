@@ -231,8 +231,10 @@ class PretrainedModelForQA(ModelAPI):
             if isinstance(output, BaseMessage):
 
                 return self.extract_final_answer(output.content)
+            if isinstance(output, str):
+                return self.extract_final_answer(output)
 
-            return self.extract_final_answer(output)
+            return output
 
         except Exception as e:
             raise ValueError(Errors.E089(error_message=e))
