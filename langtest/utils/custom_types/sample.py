@@ -7,6 +7,7 @@ from copy import deepcopy
 from langtest.modelhandler.modelhandler import ModelAPI
 from ...errors import Errors
 from pydantic.v1 import BaseModel, PrivateAttr, validator, Field
+from pydantic import BaseModel as BaseModelV2
 from .helpers import Transformation, Span
 from .helpers import default_user_prompt
 from ...metrics import EmbeddingDistance
@@ -546,6 +547,7 @@ class QASample(BaseQASample):
                 if harness_config["evaluation"]["metric"].lower() == "llm_eval":
                     model = harness_config["evaluation"].get("model", None)
                     hub = harness_config["evaluation"].get("hub", None)
+                    model_type = harness_config["evaluation"].get("model_type", None)
                     model_parameters = harness_config["evaluation"].get(
                         "model_parameters", None
                     )
@@ -556,7 +558,7 @@ class QASample(BaseQASample):
 
                         load_eval_model = TaskManager(self.task)
                         self.eval_model = load_eval_model.model(
-                            model, hub, **model_parameters
+                            model, hub, model_type=model_type, **model_parameters
                         )
                     else:
                         self.eval_model = EVAL_MODEL
@@ -626,6 +628,11 @@ class QASample(BaseQASample):
         """
 
         if self.ran_pass is not None:
+            return self.ran_pass
+        elif issubclass(self.expected_results.__class__, BaseModelV2) or issubclass(
+            self.expected_results.__class__, BaseModel
+        ):
+            self.ran_pass = self.expected_results == self.actual_results
             return self.ran_pass
         elif isinstance(self.expected_results, MaxScoreOutput):
             self.ran_pass = self.expected_results >= self.actual_results
