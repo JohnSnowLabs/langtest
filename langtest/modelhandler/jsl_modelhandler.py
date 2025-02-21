@@ -1,6 +1,6 @@
 import os
 from abc import ABC, abstractmethod
-from typing import Any, List, Union, Dict, Tuple
+from typing import Any, List, Literal, Union, Dict, Tuple
 from functools import lru_cache
 
 from langtest.utils.custom_types.helpers import HashableDict
@@ -596,11 +596,14 @@ class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
         """
         super().__init__(model)
 
+        self.model_type: Literal["QA", "TextGen"] = "QA"
+
         _qa_model = None
         for annotator in self.model.stages:
-            if self.is_qa_annotator(annotator):
-                _qa_model = annotator
+            is_supported, model_type = self.is_qa_annotator(annotator)
+            if is_supported:
                 break
+            self.model_type = model_type
 
         if _qa_model is None:
             raise ValueError(Errors.E040(var="QA"))
@@ -613,7 +616,10 @@ class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
         """Check QA model instance is supported by langtest"""
         for model in SUPPORTED_SPARKNLP_QA:
             if isinstance(model_instance, model):
-                return True
+                return True, "QA"
+        for model in SUPPORTED_SPARKNLP_TEXT_GENERATION:
+            if isinstance(model_instance, model):
+                return True, "TextGen"
         return False
 
     @lru_cache(maxsize=102400)
@@ -626,15 +632,21 @@ class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
         Returns:
             Dict[str, Any]: Question answering output from SparkNLP LightPipeline.
         """
-        if isinstance(text, dict):
+        if self.model_type == "QA" and isinstance(text, dict) and "context" in text:
             context = text["context"]
             question = text["question"]
+            prediction_metadata = self.model.fullAnnotate([context], [question])[0][
+                self.output_col
+            ]
+        elif self.model_type == "TextGen":
+            question = text
+            prediction_metadata = self.model.fullAnnotate([question])[0][self.output_col]
         else:
             question = text
             context = ""
-        prediction_metadata = self.model.fullAnnotate([context], [question])[0][
-            self.output_col
-        ]
+            prediction_metadata = self.model.fullAnnotate([context], [question])[0][
+                self.output_col
+            ]
         prediction = prediction_metadata[0].result
 
         return prediction
