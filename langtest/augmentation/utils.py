@@ -2,7 +2,7 @@ import re
 from typing import List, TypedDict, Union
 import os
 
-from pydantic.v1 import BaseModel, validator
+from pydantic import BaseModel, field_validator
 from langtest.logger import logger
 
 
@@ -14,6 +14,7 @@ class OpenAIConfig(TypedDict):
     organization: Union[str, None] = (None,)
     project: Union[str, None] = (None,)
     provider: str = "openai"
+    model: str = "gpt-4o-mini"
 
 
 class AzureOpenAIConfig(TypedDict):
@@ -27,6 +28,7 @@ class AzureOpenAIConfig(TypedDict):
     azure_ad_token: Union[str, None] = (None,)
     azure_ad_token_provider = (None,)
     organization: Union[str, None] = (None,)
+    model: str = "gpt-4o-mini"
 
 
 class Templates(BaseModel):
@@ -39,11 +41,13 @@ class Templates(BaseModel):
         self.templates = [i.strip('"') for i in self.templates]
         logger.info(f"Generated templates: {self.templates}")
 
-    @validator("templates", each_item=True, allow_reuse=True)
+    @field_validator("templates", mode="before")
     def check_templates(cls, v: str):
         """Validator to check if templates are generated."""
         if not v:
             raise ValueError("No templates generated.")
+        if isinstance(v, list):
+            return [i.strip('"') for i in v]
         return v.strip('"')
 
     def remove_invalid_templates(self, original_template):
@@ -77,8 +81,11 @@ def generate_templates_azoi(
 
     import openai
 
+    model_name = model_config.get("model", "gpt-4o-mini")
+
     if "provider" in model_config:
         del model_config["provider"]
+        del model_config["model"]
 
     client = openai.AzureOpenAI(**model_config)
 
@@ -92,7 +99,7 @@ def generate_templates_azoi(
     )
 
     response = client.chat.completions.create(
-        model="gpt-4o-mini",
+        model=model_name,
         messages=[
             {
                 "role": "system",
@@ -117,7 +124,6 @@ def generate_templates_azoi(
             },
         ],
         temperature=0.1,
-        max_tokens=1000,
     )
 
     import json
@@ -141,8 +147,11 @@ def generate_templates_openai(
 
     import openai
 
+    model_name = model_config.get("model", "gpt-4o-mini")
+
     if "provider" in model_config:
         del model_config["provider"]
+        del model_config["model"]
 
     client = openai.OpenAI(**model_config)
 
@@ -155,7 +164,7 @@ def generate_templates_openai(
         f"{template}\n"
     )
     response = client.beta.chat.completions.parse(
-        model="gpt-4o-mini",
+        model=model_name,
         messages=[
             {
                 "role": "system",
@@ -163,7 +172,6 @@ def generate_templates_openai(
             },
             {"role": "user", "content": prompt},
         ],
-        max_tokens=100,
         temperature=0.1,
         response_format=Templates,
     )
