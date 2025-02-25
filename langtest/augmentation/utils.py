@@ -85,6 +85,8 @@ def generate_templates_azoi(
 
     if "provider" in model_config:
         del model_config["provider"]
+
+    if "model" in model_config:
         del model_config["model"]
 
     client = openai.AzureOpenAI(**model_config)
@@ -151,6 +153,8 @@ def generate_templates_openai(
 
     if "provider" in model_config:
         del model_config["provider"]
+
+    if "model" in model_config:
         del model_config["model"]
 
     client = openai.OpenAI(**model_config)
@@ -177,6 +181,49 @@ def generate_templates_openai(
     )
 
     generated_response = response.choices[0].message.parsed
+    generated_response.remove_invalid_templates(template)
+
+    return generated_response.templates[:num_extra_templates]
+
+
+def generate_templates_ollama(
+    template: str, num_extra_templates: int, model_config: OpenAIConfig = OpenAIConfig()
+):
+    """Generate new templates based on the provided template using OpenAI API."""
+
+    import ollama
+
+    model_name = model_config.get("model", "gpt-4o-mini")
+
+    if "provider" in model_config:
+        del model_config["provider"]
+
+    if "model" in model_config:
+        del model_config["model"]
+
+    client = ollama.Client()
+
+    prompt = (
+        f"Based on the provided template, create {num_extra_templates} new and unique templates that are "
+        "variations on this theme. Present these as a list, with each template as a quoted string. The list should "
+        "contain only the templates, without any additional text or explanation. Ensure that the structure of "
+        "these variables remains consistent in each generated template. Note: don't add any extra variables and ignore typo errors.\n\n"
+        "Template:\n"
+        f"{template}\n"
+    )
+    response = client.chat(
+        model=model_name,
+        messages=[
+            {
+                "role": "system",
+                "content": f"Action: Generate up to {num_extra_templates} templates and ensure that the structure of the variables within the templates remains unchanged and don't add any extra variables.",
+            },
+            {"role": "user", "content": prompt},
+        ],
+        format=Templates.model_json_schema(),
+    )
+
+    generated_response = Templates.model_validate_json(response.message.content)
     generated_response.remove_invalid_templates(template)
 
     return generated_response.templates[:num_extra_templates]
