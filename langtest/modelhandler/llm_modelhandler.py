@@ -229,10 +229,32 @@ class PretrainedModelForQA(ModelAPI):
             output = llmchain.invoke(text)
 
             if isinstance(output, BaseMessage):
-                return output.content
+
+                return self.extract_final_answer(output.content)
+            if isinstance(output, str):
+                return self.extract_final_answer(output)
 
             return output
 
+        except Exception as e:
+            raise ValueError(Errors.E089(error_message=e))
+
+    def extract_final_answer(self, text: str):
+        """Extract the final answer from text.
+
+        Args:
+            text (str): The input text.
+
+        Returns:
+            The final answer.
+        """
+        try:
+            # match with tags like </*> in the text
+            import re
+
+            pattern = r"</[^>]+>"
+            result = re.split(pattern, text)[-1]
+            return result
         except Exception as e:
             raise ValueError(Errors.E089(error_message=e))
 
