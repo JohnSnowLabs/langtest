@@ -3,6 +3,7 @@ import asyncio
 from collections import defaultdict
 import logging
 import random
+import re
 from typing import List, Dict, TypedDict, Union
 
 import importlib_resources
@@ -10,7 +11,11 @@ from langtest.errors import Errors, Warnings
 from langtest.modelhandler.modelhandler import ModelAPI
 from langtest.transform.base import ITests, TestFactory
 from langtest.transform.utils import GENERIC2BRAND_TEMPLATE, filter_unique_samples
-from langtest.utils.custom_types.helpers import HashableDict
+from langtest.utils.custom_types.helpers import (
+    HashableDict,
+    build_qa_input,
+    build_qa_prompt,
+)
 from langtest.utils.custom_types.sample import QASample, Sample
 
 
@@ -589,3 +594,207 @@ class Posology:
                     text = text.replace(n.result, random_word)
 
         return text
+
+
+class FCT(BaseClincial):
+    """
+    FCT class for the clinical tests
+    """
+
+    alias_name = "fct"
+    supported_tasks = ["question-answering", "text-generation"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """Transform method for the FCT class"""
+
+        transformed_samples = []
+        upper_bound = len(sample_list) - 3
+
+        for idx, sample in enumerate(sample_list):
+            if isinstance(sample, str):
+
+                continue
+
+            sample.category = "clinical"
+            selected = (
+                random.randint(idx, upper_bound) if idx <= upper_bound else upper_bound
+            )
+            if idx == selected:
+                selected = (selected + 1) % len(sample_list)
+            selected_sample = sample_list[selected]
+
+            if hasattr(sample, "options") and sample.options not in ["-", None]:
+                if isinstance(selected_sample.options, list):
+                    sample.options = selected_sample.options + ["F. None of the above"]
+                elif isinstance(
+                    selected_sample.options, str
+                ) and not selected_sample.options.endswith("F. None of the above"):
+                    sample.options = f"{selected_sample.options}\nF. None of the above"
+            elif hasattr(sample, "original_context") and sample.original_context not in [
+                "-",
+                None,
+            ]:
+                sample.original_context = selected_sample.original_context
+
+            sample.perturbed_context = ""
+            sample.perturbed_question = ""
+            sample.expected_results = "None of the above"
+            transformed_samples.append(sample)
+
+        return transformed_samples
+
+    @staticmethod
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
+        """Run method for the FCT class"""
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if sample.state != "done":
+                original_text_input = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    options=sample.options,
+                )
+                prompt = build_qa_prompt(
+                    original_text_input, "default_question_answering_prompt", **kwargs
+                )
+                sample.actual_results = model(original_text_input, prompt=prompt)
+                sample.state = "done"
+            if progress_bar:
+                progress_bar.update(1)
+        return sample_list
+
+
+class NOTA(BaseClincial):
+    """
+    NOTA class for the clinical tests
+    """
+
+    alias_name = "nota"
+    supported_tasks = ["question-answering", "text-generation"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """Transform method for the NOTA class"""
+
+        transformed_samples = []
+        for sample in sample_list:
+            if sample.expected_results is None:
+                continue
+            sample.category = "clinical"
+
+            true_answer = "\n".join(map(str, sample.expected_results))
+            options = sample.options
+
+            if options is None:
+                continue
+            if (
+                true_answer in options
+                and isinstance(options, str)
+                and isinstance(true_answer, str)
+            ):
+                # split by any letter. or number. or ) by re
+                options = re.sub(rf"{true_answer[3:]}", "None of the above", options)
+            elif (
+                true_answer in options
+                and isinstance(options, list)
+                and isinstance(true_answer, str)
+            ):
+                options = [
+                    re.sub(rf"{true_answer}", "None of the above", option)
+                    for option in options
+                ]
+            sample.options = options
+
+            sample.expected_results = "None of the above"
+            sample.perturbed_context = ""
+            sample.perturbed_question = ""
+            transformed_samples.append(sample)
+
+        return transformed_samples
+
+    @staticmethod
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
+        """Run method for the NOTA class"""
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if sample.state != "done":
+                original_text_input = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    options=sample.options,
+                )
+                prompt = build_qa_prompt(
+                    original_text_input, "default_question_answering_prompt", **kwargs
+                )
+                sample.actual_results = model(original_text_input, prompt=prompt)
+                sample.state = "done"
+            if progress_bar:
+                progress_bar.update(1)
+
+        return sample_list
+
+
+class FQT(BaseClincial):
+    """
+    FQT class for the clinical tests
+    """
+
+    alias_name = "fqt"
+    supported_tasks = ["question-answering", "text-generation"]
+
+    @staticmethod
+    def transform(sample_list: List[Sample], *args, **kwargs):
+        """Transform method for the FQT class"""
+
+        transformed_samples = []
+
+        questions = [q.original_question for q in sample_list if isinstance(q, QASample)]
+
+        # randomly select a question and swap it with another question
+
+        for sample in sample_list:
+            sample.category = "clinical"
+            if (
+                sample.original_question is None
+                or sample.original_context is None
+                or len(sample.original_question) < 2
+            ):
+                continue
+            if isinstance(sample, QASample):
+                selected = random.choice(questions)
+                sample.original_question = selected
+                sample.expected_results = "None of the above"
+                sample.perturbed_context = ""
+                sample.perturbed_question = ""
+
+            transformed_samples.append(sample)
+
+        return transformed_samples
+
+    @staticmethod
+    async def run(sample_list: List[Sample], model: ModelAPI, *args, **kwargs):
+        """Run method for the FQT class"""
+
+        progress_bar = kwargs.get("progress_bar", False)
+
+        for sample in sample_list:
+            if sample.state != "done":
+                original_text_input = build_qa_input(
+                    context=sample.original_context,
+                    question=sample.original_question,
+                    # options=(sample.options if sample.options else ""),
+                )
+                prompt = build_qa_prompt(
+                    original_text_input, "default_question_answering_prompt", **kwargs
+                )
+                sample.actual_results = model(original_text_input, prompt=prompt)
+                sample.state = "done"
+            if progress_bar:
+                progress_bar.update(1)
+
+        return sample_list
