@@ -189,7 +189,7 @@ def generate_templates_openai(
 def generate_templates_ollama(
     template: str, num_extra_templates: int, model_config: OpenAIConfig = OpenAIConfig()
 ):
-    """Generate new templates based on the provided template using OpenAI API."""
+    """Generate new templates based on the provided template using Ollama API."""
     import ollama
 
     # model_name
