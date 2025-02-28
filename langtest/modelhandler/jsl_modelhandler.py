@@ -620,7 +620,7 @@ class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
         for model in SUPPORTED_SPARKNLP_TEXT_GENERATION:
             if isinstance(model_instance, model):
                 return True, "TextGen"
-        return False
+        return False, None
 
     @lru_cache(maxsize=102400)
     def predict(self, text: Union[str, Dict], *args, **kwargs) -> Dict[str, Any]:
