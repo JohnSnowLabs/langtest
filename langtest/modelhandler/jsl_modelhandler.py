@@ -602,8 +602,9 @@ class PretrainedModelForQA(PretrainedJSLModel, ModelAPI):
         for annotator in self.model.stages:
             is_supported, model_type = self.is_qa_annotator(annotator)
             if is_supported:
+                self.model_type = model_type
+                _qa_model = annotator
                 break
-            self.model_type = model_type
 
         if _qa_model is None:
             raise ValueError(Errors.E040(var="QA"))
