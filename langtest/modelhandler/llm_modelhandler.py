@@ -98,8 +98,9 @@ class PretrainedModelForQA(ModelAPI):
 
             from .utils import MODEL_CLASSES
 
-            if model_type is None and hub in ["azure-openai", "openai"]:
+            if model_type is None and hub in ("azure-openai", "openai"):
                 from openai.types.chat_model import ChatModel
+
                 if path in ChatModel.__args__:
                     model_type = "chat"
 
