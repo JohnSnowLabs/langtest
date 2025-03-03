@@ -216,7 +216,10 @@ class Harness:
             self.prompt_manager = PromptManager.from_prompt_configs(self.__prompt_config)
 
         # additional model info
-        additional_info = {**additional_info, **self._config.get("model_parameters", {})}
+        additional_info = {
+            **(additional_info or {}),
+            **self._config.get("model_parameters", {}),
+        }
 
         # model section
         if isinstance(model, list):
