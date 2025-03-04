@@ -167,6 +167,7 @@ class Harness:
             self.hub = hub
             self._actual_model = model
         else:
+            additional_info = {}
             hub = None
             model_type = None
 
@@ -232,8 +233,10 @@ class Harness:
                 # get config from model_parameters
                 model_params = self._config.get("model_parameters", {})
                 if isinstance(model_params, dict) and model in model_params:
+                    # additional info for each model
                     additional_info = {**model_params[model], **additional_info}
                 else:
+                    # same additional info for all models
                     additional_info = {**additional_info, **model_params}
 
                 model_dict[model] = self.task.model(
