@@ -215,18 +215,26 @@ class Harness:
         if self.__prompt_config:
             self.prompt_manager = PromptManager.from_prompt_configs(self.__prompt_config)
 
-        # additional model info
-        additional_info = {
-            **(additional_info or {}),
-            **self._config.get("model_parameters", {}),
-        }
-
         # model section
         if isinstance(model, list):
             model_dict = {}
             for i in model:
                 model = i["model"]
                 hub = i["hub"]
+
+                # additional info for each model
+                additional_info = (
+                    {k: v for k, v in i.items() if k not in {"hub", "model", "type"}}
+                    if i
+                    else {}
+                )
+
+                # get config from model_parameters
+                model_params = self._config.get("model_parameters", {})
+                if isinstance(model_params, dict) and model in model_params:
+                    additional_info = {**model_params[model], **additional_info}
+                else:
+                    additional_info = {**additional_info, **model_params}
 
                 model_dict[model] = self.task.model(
                     model, hub, model_type, **additional_info
@@ -235,6 +243,10 @@ class Harness:
                 self.model = model_dict
 
         else:
+            additional_info = {
+                **(additional_info or {}),
+                **self._config.get("model_parameters", {}),
+            }
             self.model = self.task.model(model, hub, model_type, **additional_info)
         # end model selection
         formatted_config = json.dumps(self._config, indent=1)
