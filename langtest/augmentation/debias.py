@@ -389,7 +389,9 @@ class DebiasTextProcessing:
             response.get("message", {}).get("content")
         )
 
-    def enhance_text(self, text: str, bias_tolerance_level: Literal[1, 2, 3, 4, 5] = 2) -> str:
+    def enhance_text(
+        self, text: str, bias_tolerance_level: Literal[1, 2, 3, 4, 5] = 2
+    ) -> str:
         """Enhance the text by debiasing it."""
         category, sub_category, rationale, rating, steps = self.detect_bias(text)
         if rating and rating >= bias_tolerance_level:
