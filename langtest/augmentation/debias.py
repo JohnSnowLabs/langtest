@@ -388,3 +388,16 @@ class DebiasTextProcessing:
         return output_schema.model_validate_json(
             response.get("message", {}).get("content")
         )
+
+    def enhance_text(
+        self, text: str, bias_tolerance_level: Literal[1, 2, 3, 4, 5] = 2
+    ) -> str:
+        """Enhance the text by debiasing it."""
+        category, sub_category, rationale, rating, steps = self.detect_bias(text)
+        if rating and rating >= bias_tolerance_level:
+            debiased_text = self.debias_text(
+                text, category, sub_category, rationale, steps
+            )
+        else:
+            debiased_text = ""
+        return debiased_text
