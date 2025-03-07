@@ -599,6 +599,7 @@ class Posology:
 class FCT(BaseClincial):
     """
     FCT class for the clinical tests
+    False Confidence Test
     """
 
     alias_name = "fct"
@@ -697,6 +698,7 @@ class NOTA(BaseClincial):
             ):
                 # split by any letter. or number. or ) by re
                 options = re.sub(rf"{true_answer[3:]}", "None of the above", options)
+
             elif (
                 true_answer in options
                 and isinstance(options, list)
@@ -708,7 +710,16 @@ class NOTA(BaseClincial):
                 ]
             sample.options = options
 
-            sample.expected_results = "None of the above"
+            # extract the [*]. from the true answer one character and .
+            option_pos = re.search(r"\b(?:[A-Za-z]|[0-9]|[IVXLCDM]+)[\.\)]", true_answer)
+            option_pos.end()
+            if option_pos:
+                option_pos = option_pos.end()
+                expected_results = f"{true_answer[:option_pos]} None of the above"
+            else:
+                expected_results = "None of the above"
+
+            sample.expected_results = expected_results
             sample.perturbed_context = ""
             sample.perturbed_question = ""
             transformed_samples.append(sample)
@@ -759,6 +770,7 @@ class FQT(BaseClincial):
 
         for sample in sample_list:
             sample.category = "clinical"
+            sample.test_type = "fqt"
             if (
                 sample.original_question is None
                 or sample.original_context is None
@@ -767,8 +779,12 @@ class FQT(BaseClincial):
                 continue
             if isinstance(sample, QASample):
                 selected = random.choice(questions)
+                if selected == sample.original_question:
+                    selected = random.choice(questions)
                 sample.original_question = selected
-                sample.expected_results = "None of the above"
+                sample.expected_results = kwargs.get(
+                    "expected_results", "None of the above"
+                )
                 sample.perturbed_context = ""
                 sample.perturbed_question = ""
 

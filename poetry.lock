@@ -2554,13 +2554,13 @@ tenacity = ">=8.1.0,<8.4.0 || >8.4.0,<10"
 
 [[package]]
 name = "langchain-core"
-version = "0.3.31"
+version = "0.3.41"
 description = "Building applications with LLMs through composability"
 optional = true
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "langchain_core-0.3.31-py3-none-any.whl", hash = "sha256:882e64ad95887c951dce8e835889e43263b11848c394af3b73e06912624bd743"},
-    {file = "langchain_core-0.3.31.tar.gz", hash = "sha256:5ffa56354c07de9efaa4139609659c63e7d9b29da2c825f6bab9392ec98300df"},
+    {file = "langchain_core-0.3.41-py3-none-any.whl", hash = "sha256:1a27cca5333bae7597de4004fb634b5f3e71667a3da6493b94ce83bcf15a23bd"},
+    {file = "langchain_core-0.3.41.tar.gz", hash = "sha256:d3ee9f3616ebbe7943470ade23d4a04e1729b1512c0ec55a4a07bd2ac64dedb4"},
 ]
 
 [package.dependencies]
@@ -2619,18 +2619,18 @@ ollama = ">=0.4.4,<1"
 
 [[package]]
 name = "langchain-openai"
-version = "0.2.5"
+version = "0.3.7"
 description = "An integration package connecting OpenAI and LangChain"
 optional = true
 python-versions = "<4.0,>=3.9"
 files = [
-    {file = "langchain_openai-0.2.5-py3-none-any.whl", hash = "sha256:745fd9d51a5a3a9cb8839d41f3786ab38dfc539e47c713a806cbca32f3d0875c"},
-    {file = "langchain_openai-0.2.5.tar.gz", hash = "sha256:55b98711a880474ec363267bf6cd0e2727dc00e8433731318d063a2184582c28"},
+    {file = "langchain_openai-0.3.7-py3-none-any.whl", hash = "sha256:0aefc7bdf8e7398d41e09c4313cace816df6438f2aa93d34f79523487310f0da"},
+    {file = "langchain_openai-0.3.7.tar.gz", hash = "sha256:b8b51a3aaa1cc3bda060651ea41145f7728219e8a7150b5404fb1e8446de9cef"},
 ]
 
 [package.dependencies]
-langchain-core = ">=0.3.15,<0.4.0"
-openai = ">=1.52.0,<2.0.0"
+langchain-core = ">=0.3.39,<1.0.0"
+openai = ">=1.58.1,<2.0.0"
 tiktoken = ">=0.7,<1"
 
 [[package]]
@@ -6609,4 +6609,4 @@ transformers = ["accelerate", "datasets", "torch", "transformers"]
 [metadata]
 lock-version = "2.0"
 python-versions = ">=3.9,<4.0"
-content-hash = "7a5f7a0681a46f78be0734ff1f6b84dc4c3ec8b4c236b5ecaa0022389cd1813f"
+content-hash = "199b26d29856ba3bbc127ee4853b0d5d64ac169ff6edf1eaf43cf86cd1b4d8f5"
