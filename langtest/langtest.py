@@ -158,10 +158,16 @@ class Harness:
             raise ValueError(Errors.E003())
 
         if isinstance(model, dict):
+            additional_info = (
+                {k: v for k, v in model.items() if k not in {"hub", "model", "type"}}
+                if model
+                else {}
+            )
             hub, model, model_type = model["hub"], model["model"], model.get("type")
             self.hub = hub
             self._actual_model = model
         else:
+            additional_info = {}
             hub = None
             model_type = None
 
@@ -217,16 +223,34 @@ class Harness:
                 model = i["model"]
                 hub = i["hub"]
 
+                # additional info for each model
+                additional_info = (
+                    {k: v for k, v in i.items() if k not in {"hub", "model", "type"}}
+                    if i
+                    else {}
+                )
+
+                # get config from model_parameters
+                model_params = self._config.get("model_parameters", {})
+                if isinstance(model_params, dict) and model in model_params:
+                    # additional info for each model
+                    additional_info = {**model_params[model], **additional_info}
+                else:
+                    # same additional info for all models
+                    additional_info = {**additional_info, **model_params}
+
                 model_dict[model] = self.task.model(
-                    model, hub, model_type, **self._config.get("model_parameters", {})
+                    model, hub, model_type, **additional_info
                 )
 
                 self.model = model_dict
 
         else:
-            self.model = self.task.model(
-                model, hub, model_type, **self._config.get("model_parameters", {})
-            )
+            additional_info = {
+                **(additional_info or {}),
+                **self._config.get("model_parameters", {}),
+            }
+            self.model = self.task.model(model, hub, model_type, **additional_info)
         # end model selection
         formatted_config = json.dumps(self._config, indent=1)
         print("Test Configuration : \n", formatted_config)

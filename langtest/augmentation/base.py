@@ -361,7 +361,8 @@ class TemplaticAugment(BaseAugmentaion):
                 raise ImportError(Errors.E097())
 
             except Exception as e_msg:
-                raise Errors.E095(e=e_msg)
+                error_message = str(e_msg)
+                raise Exception(Errors.E095(e=error_message))
 
         if show_templates:
             [print(template) for template in self.__templates]
@@ -610,6 +611,7 @@ class TemplaticAugment(BaseAugmentaion):
         from langtest.augmentation.utils import (
             generate_templates_azoi,  # azoi means Azure OpenAI
             generate_templates_openai,
+            generate_templates_ollama,
         )
 
         params = model_config.copy() if model_config else {}
@@ -619,6 +621,9 @@ class TemplaticAugment(BaseAugmentaion):
 
         elif model_config and model_config.get("provider") == "azure":
             return generate_templates_azoi(template, num_extra_templates, params)
+
+        elif model_config and model_config.get("provider") == "ollama":
+            return generate_templates_ollama(template, num_extra_templates, params)
 
         else:
             return generate_templates_openai(template, num_extra_templates)
